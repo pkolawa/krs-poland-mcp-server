@@ -1,3 +1,5 @@
+![logo](logo.png)
+
 # mcp-krs-poland-server
 
 The MCP server for KRS Poland public API.
