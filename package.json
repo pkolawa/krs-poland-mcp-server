@@ -2,17 +2,23 @@
   "name": "krs-poland-mcp-server",
   "version": "1.0.3",
   "description": "The MCP server for KRS Poland public API.",
-  "main": "./src/index.ts",
+  "main": "./build/index.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc && echo '#!/usr/bin/env node' | cat - build/index.js > build/index.tmp && mv build/index.tmp build/index.js && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
-    "start": "node build/index.js"
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "start": "node build/index.mjs"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pkolawa/krs-poland-mcp-server.git"
   },
-  "keywords": ["mcp", "poland", "krs", "server"],
+  "keywords": [
+    "mcp",
+    "poland",
+    "krs",
+    "server"
+  ],
   "author": {
     "name": "Piotr Kolawa",
     "email": "p.kolawa@gmail.com"
@@ -20,7 +26,7 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "krs-poland-mcp-server": "./build/index.js"
+    "krs-poland-mcp-server": "./build/index.mjs"
   },
   "bugs": {
     "url": "https://github.com/pkolawa/krs-poland-mcp-server/issues"
@@ -32,6 +38,7 @@
   },
   "devDependencies": {
     "@types/node": "^24.3.1",
+    "esbuild": "^0.25.9",
     "typescript": "^5.9.2"
   }
 }
