@@ -1,40 +1,25 @@
 ![logo](logo.png)
 
-# krs-poland-mcp-server
+# KRS Poland MCP Server
 
-The MCP server for KRS Poland public API.
+An MCP server for the Polish National Court Register (KRS) public API.
 
 ## Usage
 
-You can also use `npx` to run the server without installing it globally:
+This server is designed to be run with `npx`, allowing you to use it as a tool provider for LLM clients without a global installation.
+
+### Running with `npx`
+
+To start the server, run the following command:
 
 ```bash
 npx krs-poland-mcp-server
 ```
 
-## Usage
+### Configuration for LLM Clients
 
-After installation, you can run the server with the following command:
+To integrate this server with an LLM client (like LM Studio or others that support MCP), you can configure it to spawn the server process. Here is an example configuration:
 
-```bash
-krs-poland-mcp-server
-```
-
-Alternatively, you can run the server using `npm start`:
-
-```bash
-npm start
-```
-
-## Usage with LLM clients
-
-This MCP server can be used to provide tools to LLM clients. To serve the tools, run the following command:
-
-```bash
-npx -y krs-poland-mcp-server
-```
-
-and config:
 ```json
 {
   "mcpServers": {
@@ -48,6 +33,17 @@ and config:
   }
 }
 ```
+
+This configuration tells the client how to start the KRS tool server.
+
+## Development
+
+To run the server in a development environment:
+
+1.  Clone the repository.
+2.  Install dependencies: `npm install`
+3.  Build the project: `npm run build`
+4.  Run the server: `npm start`
 
 ## Author
 

@@ -1,6 +1,6 @@
 {
   "name": "krs-poland-mcp-server",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "The MCP server for KRS Poland public API.",
   "main": "./build/index.mjs",
   "scripts": {
@@ -23,6 +23,9 @@
     "email": "p.kolawa@gmail.com"
   },
   "license": "MIT",
+  "files": [
+    "build/index.mjs"
+  ],
   "type": "module",
   "bin": {
     "krs-poland-mcp-server": "./build/index.mjs"
