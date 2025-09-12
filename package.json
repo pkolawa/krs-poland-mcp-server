@@ -1,0 +1,35 @@
+{
+  "name": "mcp-krs-poland",
+  "version": "1.0.0",
+  "description": "The MCP server for KRS Poland public API.",
+  "main": "./src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc && echo '#!/usr/bin/env node' | cat - build/index.js > build/index.tmp && mv build/index.tmp build/index.js && node -e \"require('fs').chmodSync('build/index.js', '755')\""
+  },
+
+  "files": ["build"],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pkolawa/mcp-krs-poland.git"
+  },
+  "keywords": ["mcp", "poland", "krs"],
+  "author": "pkolawa",
+  "license": "ISC",
+  "type": "module",
+  "bin": {
+    "krs": "./build/index.js"
+  },
+  "bugs": {
+    "url": "https://github.com/pkolawa/mcp-krs-poland/issues"
+  },
+  "homepage": "https://github.com/pkolawa/mcp-krs-poland#readme",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.1",
+    "typescript": "^5.9.2"
+  }
+}
