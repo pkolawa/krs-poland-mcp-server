@@ -5,8 +5,7 @@
   "main": "./src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc && echo '#!/usr/bin/env node' | cat - build/index.js > build/index.tmp && mv build/index.tmp build/index.js && node -e \"require('fs').chmodSync('build/index.js', '755')\"",
-    "start": "node build/index.js"
+    "build": "tsc && echo '#!/usr/bin/env node' | cat - build/index.js > build/index.tmp && mv build/index.tmp build/index.js && node -e \"require('fs').chmodSync('build/index.js', '755')\""
   },
 
   "files": ["build"],
@@ -15,11 +14,8 @@
     "url": "git+https://github.com/pkolawa/mcp-krs-poland.git"
   },
   "keywords": ["mcp", "poland", "krs"],
-  "author": {
-    "name": "Piotr Kolawa",
-    "email": "piotr.kolawa@gmail.com"
-  },
-  "license": "MIT",
+  "author": "pkolawa",
+  "license": "ISC",
   "type": "module",
   "bin": {
     "mcp-krs-poland-server": "./build/index.js"
