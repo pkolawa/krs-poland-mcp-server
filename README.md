@@ -32,6 +32,14 @@ Alternatively, you can run the server using `npm start`:
 npm start
 ```
 
+## Usage with LLM clients
+
+This MCP server can be used to provide tools to LLM clients. To serve the tools, run the following command:
+
+```bash
+npx mcp-krs-poland-server serve
+```
+
 ## Author
 
 Piotr Kolawa ([@pkolawa](https://github.com/pkolawa))
