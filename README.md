@@ -1,6 +1,6 @@
 ![logo](logo.png)
 
-# mcp-krs-poland-server
+# krs-poland-mcp-server
 
 The MCP server for KRS Poland public API.
 
@@ -9,7 +9,7 @@ The MCP server for KRS Poland public API.
 To install the package, run the following command:
 
 ```bash
-npm install -g mcp-krs-poland-server
+npm install -g krs-poland-mcp-server
 ```
 
 ## Usage with NPX
@@ -17,7 +17,7 @@ npm install -g mcp-krs-poland-server
 You can also use `npx` to run the server without installing it globally:
 
 ```bash
-npx mcp-krs-poland-server
+npx krs-poland-mcp-server
 ```
 
 ## Usage
@@ -25,7 +25,7 @@ npx mcp-krs-poland-server
 After installation, you can run the server with the following command:
 
 ```bash
-mcp-krs-poland-server
+krs-poland-mcp-server
 ```
 
 Alternatively, you can run the server using `npm start`:
@@ -39,7 +39,7 @@ npm start
 This MCP server can be used to provide tools to LLM clients. To serve the tools, run the following command:
 
 ```bash
-npx mcp-krs-poland-server serve
+npx krs-poland-mcp-server serve
 ```
 
 ## Author

@@ -1,5 +1,5 @@
 {
-  "name": "mcp-krs-poland-server",
+  "name": "krs-poland-mcp-server",
   "version": "1.0.0",
   "description": "The MCP server for KRS Poland public API.",
   "main": "./src/index.ts",
@@ -22,7 +22,7 @@
   "license": "MIT",
   "type": "module",
   "bin": {
-    "mcp-krs-poland-server": "./build/index.js"
+    "krs-poland-mcp-server": "./build/index.js"
   },
   "bugs": {
     "url": "https://github.com/pkolawa/mcp-krs-poland/issues"
