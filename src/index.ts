@@ -5,6 +5,7 @@ async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error("KRS MCP Server running on stdio");
+  await new Promise(() => {});
 }
 
 if (process.argv[1] === (import.meta && import.meta.url && new URL(import.meta.url).pathname)) {
