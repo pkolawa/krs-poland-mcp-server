@@ -1,6 +1,6 @@
 {
   "name": "krs-poland-mcp-server",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "The MCP server for KRS Poland public API.",
   "main": "./src/index.ts",
   "scripts": {
@@ -12,10 +12,10 @@
     "type": "git",
     "url": "git+https://github.com/pkolawa/krs-poland-mcp-server.git"
   },
-  "keywords": ["mcp", "poland", "krs"],
+  "keywords": ["mcp", "poland", "krs", "server"],
   "author": {
     "name": "Piotr Kolawa",
-    "email": "piotr.kolawa@gmail.com"
+    "email": "p.kolawa@gmail.com"
   },
   "license": "MIT",
   "type": "module",
