@@ -47,8 +47,7 @@ To run the server in a development environment:
 
 ## Author
 
-Piotr Kolawa ([@pkolawa](https://github.com/pkolawa))
-Check out my ([Linkedin page](https://linkedin.com/in/pkolawa))
+Piotr Kolawa ([@pkolawa](https://github.com/pkolawa)) / ([Linkedin](https://linkedin.com/in/pkolawa))
 
 ## License
 
