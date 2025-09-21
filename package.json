@@ -1,8 +1,9 @@
 {
   "name": "krs-poland-mcp-server",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "The MCP server for KRS Poland public API.",
   "main": "./build/index.mjs",
+  "mcpName": "io.github.pkolawa/mcp-krs-poland",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node build.mjs",
