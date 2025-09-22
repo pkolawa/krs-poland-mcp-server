@@ -4,7 +4,7 @@ import { getKrsFullExtractTool } from "./tools/fullExtract.js";
 import { z } from "zod";
 
 export const server = new McpServer({
-  name: "krs",
+  name: "KRS Poland MCP Server",
   version: "1.0.0",
 });
 
