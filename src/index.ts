@@ -5,7 +5,7 @@ async function main() {
   try {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.error("KRS MCP Server running on stdio");
+    console.error("KRS Poland MCP Server running on stdio");
     await new Promise(() => {});
   } catch (error) {
     console.error("Fatal error in main():", error);
