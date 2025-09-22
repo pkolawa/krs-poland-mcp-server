@@ -34,3 +34,7 @@ coverage/
 # Misc
 dist/
 tmp/
+
+# MCP Publisher tokens
+.mcpregistry_github_token
+.mcpregistry_registry_token
