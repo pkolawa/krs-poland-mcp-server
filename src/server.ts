@@ -5,10 +5,10 @@ import { z } from "zod";
 
 export const server = new McpServer({
   name: "KRS Poland MCP Server",
-  version: "1.0.15",
+  version: "1.0.16",
 });
 
-server.registerTool("Get Current KRS Record",
+server.registerTool("Get_Current_KRS_Record",
     {
         title: "get-krs-current-extract",
         description: "Get current status of the entity in KRS",
@@ -17,7 +17,7 @@ server.registerTool("Get Current KRS Record",
     (params, extra) => getKrsCurrentExtractTool.handler(params, extra)
 );
 
-server.registerTool("Get Full KRS Record",
+server.registerTool("Get_Full_KRS_Record",
     {
         title: "get-krs-full-extract",
         description: "Get full status of the entity in KRS",
