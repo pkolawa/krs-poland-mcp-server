@@ -5,7 +5,7 @@ import { z } from "zod";
 
 export const server = new McpServer({
   name: "KRS Poland MCP Server",
-  version: "1.0.0",
+  version: "1.0.12",
 });
 
 server.registerTool("Get Current KRS Record",

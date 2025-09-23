@@ -1,6 +1,6 @@
 {
   "name": "krs-poland-mcp-server",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "The MCP server for KRS Poland public API.",
   "main": "./build/index.mjs",
   "mcpName": "io.github.pkolawa/mcp-krs-poland",
