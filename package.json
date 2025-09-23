@@ -3,11 +3,9 @@
   "version": "1.0.14",
   "description": "The MCP server for KRS Poland public API.",
   "main": "./build/index.mjs",
-  "mcpName": "io.github.pkolawa/mcp-krs-poland",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "node build.mjs",
-    "start": "node build/index.mjs"
+    "build": "npm run test && node build.mjs",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -40,8 +38,11 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.3.1",
     "esbuild": "^0.25.9",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.4.4",
     "typescript": "^5.9.2"
   }
 }

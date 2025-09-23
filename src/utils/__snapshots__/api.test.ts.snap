@@ -1,0 +1,974 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`KRS API Utilities makeKRSRequest should fetch OdpisAktualny and match the contract (snapshot) 1`] = `null`;
+
+exports[`KRS API Utilities makeKRSRequest should fetch OdpisPelny and match the contract (snapshot) 1`] = `
+{
+  "odpis": {
+    "dane": {
+      "dzial1": {
+        "danePodmiotu": {
+          "czyProwadziDzialalnoscZInnymiPodmiotami": [
+            {
+              "czyProwadziDzialalnoscZInnymiPodmiotami": false,
+              "nrWpisuWprow": "1",
+              "nrWpisuWykr": "7",
+            },
+          ],
+          "daneOWczesniejszejRejestracji": [
+            {
+              "nazwaPoprzedniegoRejestru": "REJESTR SPÓŁDZIELNI",
+              "nrWpisuWprow": "1",
+              "nrWpisuWykr": "7",
+              "numerWPoprzednimRejestrze": "563",
+              "sadProwadzacyRejestr": "SĄD REJONOWY W ZIELONEJ GÓRZE",
+            },
+          ],
+          "formaPrawna": [
+            {
+              "formaPrawna": "SPÓŁDZIELNIA",
+              "nrWpisuWprow": "1",
+              "nrWpisuWykr": "7",
+            },
+          ],
+          "identyfikatory": [
+            {
+              "identyfikatory": {
+                "regon": "00084470300000",
+              },
+              "nrWpisuWprow": "1",
+              "nrWpisuWykr": "7",
+            },
+          ],
+          "nazwa": [
+            {
+              "nazwa": "ROLNICZA SPÓŁDZIELNIA PRODUKCYJNA W MIELNIE",
+              "nrWpisuWprow": "1",
+              "nrWpisuWykr": "4",
+            },
+            {
+              "nazwa": "ROLNICZA SPÓŁDZIELNIA PRODUKCYJNA W MIELNIE W LIKWIDACJI",
+              "nrWpisuWprow": "4",
+              "nrWpisuWykr": "7",
+            },
+          ],
+        },
+        "pozostaleInformacje": {
+          "informacjaOCzasieNaJakiZostalUtworzonyPodmiot": [
+            {
+              "czasNaJakiUtworzonyZostalPodmiot": "NIEOZNACZONY",
+              "nrWpisuWprow": "1",
+              "nrWpisuWykr": "7",
+            },
+          ],
+        },
+        "siedzibaIAdres": {
+          "adres": [
+            {
+              "kodPocztowy": "66-629",
+              "kraj": "POLSKA",
+              "miejscowosc": "MIELNO",
+              "nrWpisuWprow": "1",
+              "nrWpisuWykr": "7",
+              "poczta": "GRABICE",
+            },
+          ],
+          "adresDoDoreczenElektronicznychWpisanyDoBAE": [],
+          "adresPocztyElektronicznej": [],
+          "adresStronyInternetowej": [],
+          "siedziba": [
+            {
+              "gmina": "GUBIN",
+              "kraj": "POLSKA",
+              "miejscowosc": "MIELNO",
+              "nrWpisuWprow": "1",
+              "nrWpisuWykr": "7",
+              "powiat": "KROŚNIEŃSKI",
+              "wojewodztwo": "LUBUSKIE",
+            },
+          ],
+        },
+        "umowaStatut": {
+          "informacjaOZawarciuZmianieUmowyStatutu": [
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "1",
+                  "nrWpisuWykr": "7",
+                  "zawarcieZmianaUmowyStatutu": "18.05.1983 R. 
+15.12.2001 R. - ZMIANA TREŚCI PARAGRAFÓW: 1,3,4,7 - UCHWAŁA WALNEGO ZGROMADZENIA CZŁONKÓW.",
+                },
+              ],
+            },
+          ],
+        },
+      },
+      "dzial2": {
+        "organNadzoru": [
+          {
+            "nazwa": [
+              {
+                "nazwa": "KOMISJA REWIZYJNA",
+                "nrWpisuWprow": "1",
+                "nrWpisuWykr": "7",
+              },
+            ],
+            "sklad": [
+              {
+                "identyfikator": [
+                  {
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "7",
+                    "pesel": "6**********",
+                  },
+                ],
+                "imiona": [
+                  {
+                    "imiona": {
+                      "imie": "M*****",
+                      "imieDrugie": "A****",
+                    },
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "7",
+                  },
+                ],
+                "nazwisko": [
+                  {
+                    "nazwisko": {
+                      "nazwiskoICzlon": "S***",
+                    },
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "7",
+                  },
+                ],
+              },
+              {
+                "identyfikator": [
+                  {
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "7",
+                    "pesel": "6**********",
+                  },
+                ],
+                "imiona": [
+                  {
+                    "imiona": {
+                      "imie": "A******",
+                      "imieDrugie": "M*****",
+                    },
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "7",
+                  },
+                ],
+                "nazwisko": [
+                  {
+                    "nazwisko": {
+                      "nazwiskoICzlon": "F******",
+                    },
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "7",
+                  },
+                ],
+              },
+              {
+                "identyfikator": [
+                  {
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "7",
+                    "pesel": "7**********",
+                  },
+                ],
+                "imiona": [
+                  {
+                    "imiona": {
+                      "imie": "D******",
+                    },
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "7",
+                  },
+                ],
+                "nazwisko": [
+                  {
+                    "nazwisko": {
+                      "nazwiskoICzlon": "G****",
+                    },
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "7",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+        "reprezentacja": [
+          {
+            "nazwaOrganu": [
+              {
+                "nazwaOrganu": "ZARZĄD",
+                "nrWpisuWprow": "1",
+                "nrWpisuWykr": "4",
+              },
+            ],
+            "sklad": [
+              {
+                "czyZawieszona": [
+                  {
+                    "czyZawieszona": false,
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "4",
+                  },
+                ],
+                "dataZawieszeniaDo": [],
+                "funkcjaWOrganie": [
+                  {
+                    "funkcjaWOrganie": "PREZES ZARZĄDU",
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "4",
+                  },
+                ],
+                "identyfikator": [
+                  {
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "4",
+                    "pesel": "5**********",
+                  },
+                ],
+                "imiona": [
+                  {
+                    "imiona": {
+                      "imie": "B*****",
+                    },
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "4",
+                  },
+                ],
+                "nazwisko": [
+                  {
+                    "nazwisko": {
+                      "nazwiskoICzlon": "S*****",
+                    },
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "4",
+                  },
+                ],
+              },
+              {
+                "czyZawieszona": [
+                  {
+                    "czyZawieszona": false,
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "4",
+                  },
+                ],
+                "dataZawieszeniaDo": [],
+                "funkcjaWOrganie": [
+                  {
+                    "funkcjaWOrganie": "CZŁONEK ZARZĄDU",
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "4",
+                  },
+                ],
+                "identyfikator": [
+                  {
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "4",
+                    "pesel": "7**********",
+                  },
+                ],
+                "imiona": [
+                  {
+                    "imiona": {
+                      "imie": "J******",
+                    },
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "4",
+                  },
+                ],
+                "nazwisko": [
+                  {
+                    "nazwisko": {
+                      "nazwiskoICzlon": "S*****",
+                    },
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "4",
+                  },
+                ],
+              },
+              {
+                "czyZawieszona": [
+                  {
+                    "czyZawieszona": false,
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "4",
+                  },
+                ],
+                "dataZawieszeniaDo": [],
+                "funkcjaWOrganie": [
+                  {
+                    "funkcjaWOrganie": "CZŁONEK ZARZĄDU",
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "4",
+                  },
+                ],
+                "identyfikator": [
+                  {
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "4",
+                    "pesel": "5**********",
+                  },
+                ],
+                "imiona": [
+                  {
+                    "imiona": {
+                      "imie": "W******",
+                    },
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "4",
+                  },
+                ],
+                "nazwisko": [
+                  {
+                    "nazwisko": {
+                      "nazwiskoICzlon": "C*********",
+                    },
+                    "nrWpisuWprow": "1",
+                    "nrWpisuWykr": "4",
+                  },
+                ],
+              },
+            ],
+            "sposobReprezentacji": [
+              {
+                "nrWpisuWprow": "1",
+                "nrWpisuWykr": "4",
+                "sposobReprezentacji": "OŚWIADCZENIE WOLI W IMIENIU SPÓŁDZIELNI SKŁADAJĄ DWAJ CZŁONKOWIE ZARZĄDU LUB JEDEN CZŁONEK ZARZĄDU I OSOBA PRZEZ ZARZĄD DO TEGO UPOWAŻNIONA. W IMIENIU SPOŁDZIELNI ZARZĄD SKŁADA OŚWIADCZENIE NA PIŚMIE UMIESZCZAJĄC SWOJE PODPISY POD NAZWĄ SPÓŁDZIELNI.",
+              },
+            ],
+          },
+        ],
+      },
+      "dzial3": {
+        "przedmiotDzialalnosci": {
+          "przedmiotPozostalejDzialalnosci": [
+            {
+              "pozycja": [
+                {
+                  "kodDzial": "01",
+                  "kodKlasa": "11",
+                  "kodPodklasa": "A",
+                  "nrWpisuWprow": "1",
+                  "nrWpisuWykr": "7",
+                  "opis": "UPRAWA ZBÓŻ",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "kodDzial": "01",
+                  "kodKlasa": "11",
+                  "kodPodklasa": "B",
+                  "nrWpisuWprow": "1",
+                  "nrWpisuWykr": "7",
+                  "opis": "UPRAWA ZIEMNIAKÓW, KORZENI I BULW O DUŻEJ ZAWARTOŚCI SKROBII I INULINY",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "kodDzial": "01",
+                  "kodKlasa": "11",
+                  "kodPodklasa": "C",
+                  "nrWpisuWprow": "1",
+                  "nrWpisuWykr": "7",
+                  "opis": "UPRAWA ROŚLIN PRZEMYSŁOWYCH I INNE UPRAWY ROLNE, GDZIE INDZIEJ NIE SKLASYFIKOWANE",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "kodDzial": "01",
+                  "kodKlasa": "12",
+                  "kodPodklasa": "A",
+                  "nrWpisuWprow": "1",
+                  "nrWpisuWykr": "7",
+                  "opis": "UPRAWA WARZYW",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "kodDzial": "01",
+                  "kodKlasa": "13",
+                  "kodPodklasa": "Z",
+                  "nrWpisuWprow": "1",
+                  "nrWpisuWykr": "7",
+                  "opis": "PRODUKCJA OWOCÓW, ORZECHÓW ORAZ UPRAWA ROŚLIN WYKORZYSTYWANYCH DO PRODUKCJI NAPOJÓW I PRZYPRAW",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "kodDzial": "01",
+                  "kodKlasa": "21",
+                  "kodPodklasa": "Z",
+                  "nrWpisuWprow": "1",
+                  "nrWpisuWykr": "7",
+                  "opis": "CHÓW I HODOWLA BYDŁA",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "kodDzial": "01",
+                  "kodKlasa": "22",
+                  "kodPodklasa": "Z",
+                  "nrWpisuWprow": "1",
+                  "nrWpisuWykr": "7",
+                  "opis": "CHÓW I HODOWLA OWIEC, KÓZ, KONI, OSŁÓW, MUŁÓW",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "kodDzial": "01",
+                  "kodKlasa": "23",
+                  "kodPodklasa": "Z",
+                  "nrWpisuWprow": "1",
+                  "nrWpisuWykr": "7",
+                  "opis": "CHÓW I HODOWLA TRZODY CHLEWNEJ",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "kodDzial": "01",
+                  "kodKlasa": "24",
+                  "kodPodklasa": "Z",
+                  "nrWpisuWprow": "1",
+                  "nrWpisuWykr": "7",
+                  "opis": "CHÓW I HODOWLA DROBIU",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "kodDzial": "01",
+                  "kodKlasa": "25",
+                  "kodPodklasa": "Z",
+                  "nrWpisuWprow": "1",
+                  "nrWpisuWykr": "7",
+                  "opis": "CHÓW I HODOWLA ZWIERZĄT POZOSTAŁYCH",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "kodDzial": "01",
+                  "kodKlasa": "41",
+                  "kodPodklasa": "A",
+                  "nrWpisuWprow": "1",
+                  "nrWpisuWykr": "7",
+                  "opis": "DZIAŁALNOŚĆ USŁUGOWA ZWIĄZANA Z UPRAWAMI ROLNYMI",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "kodDzial": "01",
+                  "kodKlasa": "42",
+                  "kodPodklasa": "Z",
+                  "nrWpisuWprow": "1",
+                  "nrWpisuWykr": "7",
+                  "opis": "DZIAŁALNOŚĆ USŁUGOWA ZWIĄZANA Z CHOWEM I HODOWLĄ ZWIERZĄT",
+                },
+              ],
+            },
+          ],
+          "przedmiotPrzewazajacejDzialalnosci": [
+            {
+              "pozycja": [],
+            },
+          ],
+        },
+        "wzmiankiOZlozonychDokumentach": {
+          "wzmiankaOZlozeniuRocznegoSprawozdaniaFinansowego": [
+            {
+              "pozycja": [
+                {
+                  "dataZlozenia": "16.06.2005",
+                  "nrWpisuWprow": "2",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2002 - 31.12.2002",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "dataZlozenia": "16.06.2005",
+                  "nrWpisuWprow": "2",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2003 - 31.12.2003",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "dataZlozenia": "08.07.2004",
+                  "nrWpisuWprow": "3",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2004R.-31.12.2004R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "dataZlozenia": "06.07.2006",
+                  "nrWpisuWprow": "5",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2005R. - 31.12.2005R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "dataZlozenia": "11.10.2012",
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2006R.-31.12.2006R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "dataZlozenia": "11.10.2012",
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2007R.-31.12.2007R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "dataZlozenia": "11.10.2012",
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2008R.-31.12.2008R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "dataZlozenia": "11.10.2012",
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2009R.-31.12.2009R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "dataZlozenia": "11.10.2012",
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2010R.-31.12.2010R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "dataZlozenia": "11.10.2012",
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2011R.-31.12.2011R.",
+                },
+              ],
+            },
+          ],
+          "wzmiankaOZlozeniuSprawozdaniaZDzialalnosci": [
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "2",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2002 - 31.12.2002",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "2",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2003 - 31.12.2003",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "3",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2004R.-31.12.2004R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "5",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2005R. - 31.12.2005R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2006R.-31.12.2006R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2007R.-31.12.2007R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2008R.-31.12.2008R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2009R.-31.12.2009R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2010R.-31.12.2010R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2011R.-31.12.2011R.",
+                },
+              ],
+            },
+          ],
+          "wzmiankaOZlozeniuUchwalyPostanowieniaOZatwierdzeniuRocznegoSprawozdaniaFinansowego": [
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "2",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2002 - 31.12.2002",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "2",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2003 - 31.12.2003",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "3",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2004R.-31.12.2004R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "5",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2005R. - 31.12.2005R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2006R.-31.12.2006R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2007R.-31.12.2007R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2008R.-31.12.2008R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2009R.-31.12.2009R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2010R.-31.12.2010R.",
+                },
+              ],
+            },
+            {
+              "pozycja": [
+                {
+                  "nrWpisuWprow": "6",
+                  "nrWpisuWykr": "7",
+                  "zaOkresOdDo": "01.01.2011R.-31.12.2011R.",
+                },
+              ],
+            },
+          ],
+        },
+      },
+      "dzial4": {},
+      "dzial5": {},
+      "dzial6": {
+        "likwidacja": [
+          {
+            "likwidatorzy": [
+              {
+                "identyfikator": [
+                  {
+                    "nrWpisuWprow": "4",
+                    "nrWpisuWykr": "7",
+                    "pesel": "7**********",
+                  },
+                ],
+                "imiona": [
+                  {
+                    "imiona": {
+                      "imie": "J******",
+                    },
+                    "nrWpisuWprow": "4",
+                    "nrWpisuWykr": "7",
+                  },
+                ],
+                "nazwisko": [
+                  {
+                    "nazwisko": {
+                      "nazwiskoICzlon": "S*****",
+                    },
+                    "nrWpisuWprow": "4",
+                    "nrWpisuWykr": "7",
+                  },
+                ],
+              },
+              {
+                "identyfikator": [
+                  {
+                    "nrWpisuWprow": "4",
+                    "nrWpisuWykr": "7",
+                    "pesel": "5**********",
+                  },
+                ],
+                "imiona": [
+                  {
+                    "imiona": {
+                      "imie": "W******",
+                    },
+                    "nrWpisuWprow": "4",
+                    "nrWpisuWykr": "7",
+                  },
+                ],
+                "nazwisko": [
+                  {
+                    "nazwisko": {
+                      "nazwiskoICzlon": "C*********",
+                    },
+                    "nrWpisuWprow": "4",
+                    "nrWpisuWykr": "7",
+                  },
+                ],
+              },
+              {
+                "identyfikator": [
+                  {
+                    "nrWpisuWprow": "4",
+                    "nrWpisuWykr": "7",
+                    "pesel": "5**********",
+                  },
+                ],
+                "imiona": [
+                  {
+                    "imiona": {
+                      "imie": "B*****",
+                    },
+                    "nrWpisuWprow": "4",
+                    "nrWpisuWykr": "7",
+                  },
+                ],
+                "nazwisko": [
+                  {
+                    "nazwisko": {
+                      "nazwiskoICzlon": "S*****",
+                    },
+                    "nrWpisuWprow": "4",
+                    "nrWpisuWykr": "7",
+                  },
+                ],
+              },
+            ],
+            "otwarcieLikwidacji": [
+              {
+                "nrWpisuWprow": "4",
+                "nrWpisuWykr": "7",
+                "otwarcieLikwidacji": "01.12.2005 R. - UCHWAŁA WALNEGO ZGROMADZENIA NR 1 Z DNIA 01.12.2005 R. W SPRAWIE POSTANOWIENIA SPÓŁDZIELNI W STAN LIKWIDACJI ORAZ UCHWAŁA WALNEGO ZGROMADZENIA NR 2 Z DNIA 15.12.2005 R. W SPRAWIE POSTANOWIENIA SPÓŁDZIELNI W STAN LIKWIDACJI ORAZ POWOŁANIA LIKWIDATORA.",
+              },
+            ],
+            "sposobReprezentacjiPodmiotuPrzezLikwidatorow": [
+              {
+                "nrWpisuWprow": "4",
+                "nrWpisuWykr": "7",
+                "sposobReprezentacjiPodmiotuPrzezLikwidatorow": "OŚWIADCZENIA WOLI W IMIENIU SPÓŁDZIELNI SKŁADA DWÓCH LIKWIDATORÓW LUB JEDEN LIKWIDATOR I OSOBA PRZEZ LIKWIDATORÓW DO TEGO UPOWAŻNIONA.
+W IMIENIU SPÓŁDZIELNI LIKWIDATORZY SKŁADAJĄ OŚWIADCZENIE NA PISMIE UMIESZCZAJĄC SWOJE PODPISY POD NAZWĄ SPÓŁDZIELNI.",
+              },
+            ],
+            "zakonczenieLikwidacji": [
+              {
+                "nrWpisuWprow": "7",
+                "nrWpisuWykr": "7",
+                "zakonczenieLikwidacji": "30.09.2012 R, UCHWAŁA NR 1/ 2012 WALNEGO ZEBRANIA CZŁONKÓW W SPRAWIE ZAKOŃCZENIA PROCESU LIKWIDACJI I PRZYJĘCIA SPRAWOZDANIA NA DZIEŃ ZAKOŃCZENIA LIKWIDACJI",
+              },
+            ],
+          },
+        ],
+        "rozwiazanieUniewaznienie": {
+          "okreslenieOkolicznosci": [],
+        },
+      },
+    },
+    "naglowekP": {
+      "dataCzasOdpisu": Any<String>,
+      "numerKRS": "0000109411",
+      "rejestr": "RejP",
+      "stanPozycji": 2,
+      "stanZDnia": "28.01.2025",
+      "wpis": [
+        {
+          "dataWpisu": "24.04.2002",
+          "numerWpisu": 1,
+          "opis": "REJESTRACJA W KRAJOWYM REJESTRZE SĄDOWYM",
+          "oznaczenieSaduDokonujacegoWpisu": "SĄD REJONOWY  W ZIELONEJ GÓRZE, VIII WYDZIAŁ GOSPODARCZY KRAJOWEGO REJESTRU SĄDOWEGO",
+          "sygnaturaAktSprawyDotyczacejWpisu": "ZG.VIII NS-REJ.KRS/2030/02/111",
+        },
+        {
+          "dataWpisu": "22.06.2005",
+          "numerWpisu": 2,
+          "opis": "ZMIANA DANYCH W REJESTRZE",
+          "oznaczenieSaduDokonujacegoWpisu": "SĄD REJONOWY  W ZIELONEJ GÓRZE, VIII WYDZIAŁ GOSPODARCZY KRAJOWEGO REJESTRU SĄDOWEGO",
+          "sygnaturaAktSprawyDotyczacejWpisu": "ZG.VIII NS-REJ.KRS/5242/05/658",
+        },
+        {
+          "dataWpisu": "12.07.2005",
+          "numerWpisu": 3,
+          "opis": "ZMIANA DANYCH W REJESTRZE",
+          "oznaczenieSaduDokonujacegoWpisu": "SĄD REJONOWY  W ZIELONEJ GÓRZE, VIII WYDZIAŁ GOSPODARCZY KRAJOWEGO REJESTRU SĄDOWEGO",
+          "sygnaturaAktSprawyDotyczacejWpisu": "ZG.VIII NS-REJ.KRS/6184/05/714",
+        },
+        {
+          "dataWpisu": "10.01.2006",
+          "numerWpisu": 4,
+          "opis": "ZMIANA DANYCH W REJESTRZE",
+          "oznaczenieSaduDokonujacegoWpisu": "SĄD REJONOWY  W ZIELONEJ GÓRZE, VIII WYDZIAŁ GOSPODARCZY KRAJOWEGO REJESTRU SĄDOWEGO",
+          "sygnaturaAktSprawyDotyczacejWpisu": "ZG.VIII NS-REJ.KRS/23/06/863",
+        },
+        {
+          "dataWpisu": "13.07.2006",
+          "numerWpisu": 5,
+          "opis": "ZMIANA DANYCH W REJESTRZE",
+          "oznaczenieSaduDokonujacegoWpisu": "SĄD REJONOWY  W ZIELONEJ GÓRZE, VIII WYDZIAŁ GOSPODARCZY KRAJOWEGO REJESTRU SĄDOWEGO",
+          "sygnaturaAktSprawyDotyczacejWpisu": "ZG.VIII NS-REJ.KRS/8621/06/235",
+        },
+        {
+          "dataWpisu": "19.10.2012",
+          "numerWpisu": 6,
+          "opis": "ZMIANA DANYCH W REJESTRZE",
+          "oznaczenieSaduDokonujacegoWpisu": "SĄD REJONOWY  W ZIELONEJ GÓRZE, VIII WYDZIAŁ GOSPODARCZY KRAJOWEGO REJESTRU SĄDOWEGO",
+          "sygnaturaAktSprawyDotyczacejWpisu": "ZG.VIII NS-REJ.KRS/12604/12/366",
+        },
+        {
+          "dataUprawomocnienia": "15.11.2012",
+          "dataWpisu": "26.10.2012",
+          "numerWpisu": 7,
+          "opis": "WYKREŚLENIE Z KRAJOWEGO REJESTRU SĄDOWEGO",
+          "oznaczenieSaduDokonujacegoWpisu": "SĄD REJONOWY  W ZIELONEJ GÓRZE, VIII WYDZIAŁ GOSPODARCZY KRAJOWEGO REJESTRU SĄDOWEGO",
+          "sygnaturaAktSprawyDotyczacejWpisu": "ZG.VIII NS-REJ.KRS/12301/12/860",
+        },
+      ],
+    },
+    "rodzaj": "Pełny",
+  },
+}
+`;
+
+exports[`KRS API Utilities makeKRSRequest should return null for a non-existent KRS number 1`] = `null`;
