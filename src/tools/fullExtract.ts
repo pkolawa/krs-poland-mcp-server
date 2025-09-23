@@ -7,7 +7,7 @@ import { formatCompanyHeadline } from "../utils/format.js";
  * KRS Open API – odpis pełny (JSON)
  */
 export const getKrsFullExtractTool = {
-  description: "Pobierz odpis pełny KRS (JSON) dla wskazanego numeru KRS i rejestru (P/S).",
+  description: "Get current registry based on KRS number",
   schema: {
     krs: z
       .string()

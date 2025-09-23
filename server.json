@@ -1,19 +1,19 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
   "name": "io.github.pkolawa/mcp-krs-poland",
-  "description": "Polish National government's registry of all businesses, foundations, and other legal entities.",
+  "description": "Polish National registry of businesses and other legal entities",
   "status": "active",
   "repository": {
     "url": "https://github.com/pkolawa/mcp-krs-poland",
     "source": "github"
   },
-  "version": "1.0.14",
+  "version": "1.0.15",
   "packages": [
     {
       "registry_type": "npm",
       "registry_base_url": "https://registry.npmjs.org",
       "identifier": "krs-poland-mcp-server",
-      "version": "1.0.14",
+      "version": "1.0.15",
       "transport": {
         "type": "stdio"
       }
