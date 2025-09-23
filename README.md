@@ -38,10 +38,11 @@ This configuration tells the client how to start the KRS tool server.
 
 ## Server Functions
 
-The server provides the following tools:
 
-- **Get Current KRS Record** (`get-krs-current-extract`): Retrieves the current status and information for a given entity from the KRS.
-- **Get Full KRS Record** (`get-krs-full-extract`): Retrieves the complete historical data for a given entity from the KRS.
+The server provides the following tools (checklist):
+
+- [x] **Get Current KRS Record** (`get-krs-current-extract`): Retrieves the current status and information for a given entity from the KRS.
+- [x] **Get Full KRS Record** (`get-krs-full-extract`): Retrieves the complete historical data for a given entity from the KRS.
 
 ## Development
 
