@@ -8,7 +8,7 @@ import { formatCompanyHeadline } from "../utils/format.js";
  * rejestr: 'P' (przedsiębiorców) | 'S' (stowarzyszeń)
  */
 export const getKrsCurrentExtractTool = {
-  description: "Pobierz odpis aktualny KRS (JSON) dla wskazanego numeru KRS i rejestru (P/S).",
+  description: "Get current registry based on KRS number",
   schema: {
     krs: z
       .string()
