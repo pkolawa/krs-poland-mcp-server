@@ -21,7 +21,7 @@ export const getKrsFullExtractTool = {
         .transform((val) => val.toUpperCase() as "P" | "S")
         .describe("Rejestr: P – przedsiębiorców, S – stowarzyszeń (P/S, wielkość liter bez znaczenia)"),
   },
-  handler: async (args: { krs: string; rejestr: "P" | "S" }, _extra: unknown) => {
+  handler: async (args: { krs: string; rejestr: "P" | "S" }) => {
     const { krs, rejestr } = args;
     const urls = buildExtractUrls({ type: "OdpisPelny", rejestr, krs });
     const extract = await makeKRSRequest<KrsExtract>(urls);

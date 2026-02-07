@@ -1,7 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { getKrsCurrentExtractTool } from "./tools/currentExtract.js";
 import { getKrsFullExtractTool } from "./tools/fullExtract.js";
-import { z } from "zod";
 
 export const server = new McpServer({
   name: "KRS Poland MCP Server",
