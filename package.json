@@ -5,9 +5,11 @@
   "description": "The MCP server for KRS Poland public API.",
   "main": "./build/index.mjs",
   "scripts": {
-    "build": "npm run test && node build.mjs",
+    "build": "npm run test:unit && node build.mjs",
     "lint": "eslint \"src/**/*.ts\"",
-    "test": "jest",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "jest --testPathIgnorePatterns=api.integration.test.ts",
+    "test:integration": "jest --runTestsByPath src/utils/api.integration.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "repository": {

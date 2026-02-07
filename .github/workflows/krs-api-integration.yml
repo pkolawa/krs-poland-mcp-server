@@ -26,6 +26,4 @@ jobs:
         run: npm ci
 
       - name: Run integration tests
-        env:
-          KRS_INTEGRATION_TESTS: "1"
-        run: npm test -- src/utils/api.integration.test.ts
+        run: npm run test:integration

@@ -2,15 +2,10 @@ import { buildExtractUrl } from "./api";
 
 type UnknownRecord = Record<string, unknown>;
 
-const RUN_INTEGRATION = process.env.KRS_INTEGRATION_TESTS === "1";
 const DEFAULT_KRS = "0000109411"; // GUS (stable public entity)
 const DEFAULT_REJESTR = "P";
 
-const describeIntegration = RUN_INTEGRATION ? describe : describe.skip;
-
-if (RUN_INTEGRATION) {
-  jest.setTimeout(20_000);
-}
+jest.setTimeout(20_000);
 
 function asRecord(value: unknown): UnknownRecord | undefined {
   return value && typeof value === "object" ? (value as UnknownRecord) : undefined;
@@ -93,7 +88,7 @@ async function fetchJson(url: string): Promise<unknown> {
   }
 }
 
-describeIntegration("KRS public API integration", () => {
+describe("KRS public API integration", () => {
   const krs = process.env.KRS_TEST_KRS ?? DEFAULT_KRS;
   const rejestr = (process.env.KRS_TEST_REJESTR ?? DEFAULT_REJESTR).toUpperCase();
 
