@@ -1,6 +1,6 @@
 
-import { buildExtractUrl, buildExtractUrlPath, buildExtractUrls, makeKRSRequest } from './api';
-import { KrsExtract } from '../types/krs';
+import { buildExtractUrl, buildExtractUrlPath, buildExtractUrls, makeKRSRequest } from "./api.js";
+import { KrsExtract } from "../types/krs.js";
 
 // Using a well-known, stable entity (GUS) for reliable testing.
 const TEST_KRS_NUMBER = '0000109411';

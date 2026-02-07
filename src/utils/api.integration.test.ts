@@ -1,4 +1,4 @@
-import { buildExtractUrls } from "./api";
+import { buildExtractUrls } from "./api.js";
 
 type UnknownRecord = Record<string, unknown>;
 
