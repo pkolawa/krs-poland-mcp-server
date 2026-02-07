@@ -17,15 +17,24 @@ type ExtractType = "OdpisAktualny" | "OdpisPelny";
  */
 export function buildExtractUrl(opts: { type: ExtractType; rejestr: string; krs: string }): string {
   const { type, rejestr, krs } = opts;
-  // Prefer path params; keep query fallback if needed by future changes.
   return `${KRS_API_BASE}/${type}/${krs}?rejestr=${rejestr}&format=json`;
+}
+
+export function buildExtractUrlPath(opts: { type: ExtractType; rejestr: string; krs: string }): string {
+  const { type, rejestr, krs } = opts;
+  return `${KRS_API_BASE}/${type}/${rejestr}/${krs}?format=json`;
+}
+
+export function buildExtractUrls(opts: { type: ExtractType; rejestr: string; krs: string }): string[] {
+  // Prefer path params; keep query fallback if needed by future changes.
+  return [buildExtractUrlPath(opts), buildExtractUrl(opts)];
 }
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function makeKRSRequest<T>(url: string): Promise<T | null> {
+async function makeKRSRequestSingle<T>(url: string, logFailure: boolean): Promise<T | null> {
   const headers = { Accept: "application/json", "User-Agent": USER_AGENT };
   const maxAttempts = RETRY_DELAYS_MS.length + 1;
 
@@ -39,7 +48,9 @@ export async function makeKRSRequest<T>(url: string): Promise<T | null> {
       return (await res.json()) as T;
     } catch (err) {
       if (attempt === maxAttempts - 1) {
-        console.error("KRS request error:", err);
+        if (logFailure) {
+          console.error("KRS request error:", err);
+        }
         return null;
       }
 
@@ -49,6 +60,19 @@ export async function makeKRSRequest<T>(url: string): Promise<T | null> {
     } finally {
       clearTimeout(timeoutId);
     }
+  }
+
+  return null;
+}
+
+export async function makeKRSRequest<T>(urlOrUrls: string | string[]): Promise<T | null> {
+  const urls = Array.isArray(urlOrUrls) ? urlOrUrls : [urlOrUrls];
+
+  for (let index = 0; index < urls.length; index++) {
+    const url = urls[index];
+    const logFailure = index === urls.length - 1;
+    const result = await makeKRSRequestSingle<T>(url, logFailure);
+    if (result) return result;
   }
 
   return null;

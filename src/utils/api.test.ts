@@ -1,5 +1,5 @@
 
-import { buildExtractUrl, makeKRSRequest } from './api';
+import { buildExtractUrl, buildExtractUrlPath, buildExtractUrls, makeKRSRequest } from './api';
 import { KrsExtract } from '../types/krs';
 
 // Using a well-known, stable entity (GUS) for reliable testing.
@@ -53,6 +53,28 @@ describe('KRS API Utilities', () => {
     it('should construct a valid URL for OdpisPelny', () => {
       const url = buildExtractUrl({ type: 'OdpisPelny', rejestr: 'S', krs: TEST_KRS_NUMBER });
       expect(url).toBe(`https://api-krs.ms.gov.pl/api/krs/OdpisPelny/${TEST_KRS_NUMBER}?rejestr=S&format=json`);
+    });
+  });
+
+  describe('buildExtractUrlPath', () => {
+    it('should construct a valid path URL for OdpisAktualny', () => {
+      const url = buildExtractUrlPath({ type: 'OdpisAktualny', rejestr: 'P', krs: TEST_KRS_NUMBER });
+      expect(url).toBe(`https://api-krs.ms.gov.pl/api/krs/OdpisAktualny/P/${TEST_KRS_NUMBER}?format=json`);
+    });
+
+    it('should construct a valid path URL for OdpisPelny', () => {
+      const url = buildExtractUrlPath({ type: 'OdpisPelny', rejestr: 'S', krs: TEST_KRS_NUMBER });
+      expect(url).toBe(`https://api-krs.ms.gov.pl/api/krs/OdpisPelny/S/${TEST_KRS_NUMBER}?format=json`);
+    });
+  });
+
+  describe('buildExtractUrls', () => {
+    it('should return path-first URL variants', () => {
+      const urls = buildExtractUrls({ type: 'OdpisAktualny', rejestr: 'P', krs: TEST_KRS_NUMBER });
+      expect(urls).toEqual([
+        `https://api-krs.ms.gov.pl/api/krs/OdpisAktualny/P/${TEST_KRS_NUMBER}?format=json`,
+        `https://api-krs.ms.gov.pl/api/krs/OdpisAktualny/${TEST_KRS_NUMBER}?rejestr=P&format=json`,
+      ]);
     });
   });
 

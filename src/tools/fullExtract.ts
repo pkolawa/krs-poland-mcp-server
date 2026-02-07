@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { makeKRSRequest, buildExtractUrl } from "../utils/api.js";
+import { makeKRSRequest, buildExtractUrls } from "../utils/api.js";
 import { KrsExtract } from "../types/krs.js";
 import { formatCompanyHeadline } from "../utils/format.js";
 
@@ -23,8 +23,8 @@ export const getKrsFullExtractTool = {
   },
   handler: async (args: { krs: string; rejestr: "P" | "S" }, _extra: unknown) => {
     const { krs, rejestr } = args;
-    const url = buildExtractUrl({ type: "OdpisPelny", rejestr, krs });
-    const extract = await makeKRSRequest<KrsExtract>(url);
+    const urls = buildExtractUrls({ type: "OdpisPelny", rejestr, krs });
+    const extract = await makeKRSRequest<KrsExtract>(urls);
 
     if (!extract) {
       return {
