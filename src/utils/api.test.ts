@@ -59,6 +59,7 @@ describe('KRS API Utilities', () => {
   // Unit tests for the request helper (mocked fetch to avoid network flakiness)
   describe('makeKRSRequest', () => {
     afterEach(() => {
+      jest.useRealTimers();
       jest.restoreAllMocks();
     });
 
@@ -73,7 +74,13 @@ describe('KRS API Utilities', () => {
       const response = await makeKRSRequest<KrsExtract>(url);
 
       expect(response).toEqual(SAMPLE_ODPIS_AKTUALNY);
-      expect(fetchSpy).toHaveBeenCalledWith(url, { headers: { Accept: 'application/json' } });
+      expect(fetchSpy).toHaveBeenCalledWith(
+        url,
+        expect.objectContaining({
+          headers: { Accept: 'application/json', 'User-Agent': 'krs-mcp/1.0' },
+          signal: expect.any(AbortSignal),
+        }),
+      );
     });
 
     it('should return parsed JSON for a different extract type', async () => {
@@ -89,7 +96,8 @@ describe('KRS API Utilities', () => {
       expect(response).toEqual(SAMPLE_ODPIS_PELNY);
     });
 
-    it('should return null when the response is not ok', async () => {
+    it('should return null when the response is not ok (after retries)', async () => {
+      jest.useFakeTimers();
       const url = buildExtractUrl({ type: 'OdpisAktualny', rejestr: 'P', krs: '0000000001' });
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
 
@@ -99,21 +107,52 @@ describe('KRS API Utilities', () => {
         json: async () => ({ message: 'Not found' }),
       } as Response);
 
-      const response = await makeKRSRequest<KrsExtract>(url);
+      const responsePromise = makeKRSRequest<KrsExtract>(url);
+      await jest.advanceTimersByTimeAsync(30_000);
+      await jest.advanceTimersByTimeAsync(60_000);
+      const response = await responsePromise;
 
       expect(response).toBeNull();
       expect(consoleSpy).toHaveBeenCalled();
     });
 
-    it('should return null when fetch throws', async () => {
+    it('should return null when fetch throws (after retries)', async () => {
+      jest.useFakeTimers();
       const url = buildExtractUrl({ type: 'OdpisAktualny', rejestr: 'P', krs: TEST_KRS_NUMBER });
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
 
       jest.spyOn(global, 'fetch').mockRejectedValue(new Error('network error'));
 
-      const response = await makeKRSRequest<KrsExtract>(url);
+      const responsePromise = makeKRSRequest<KrsExtract>(url);
+      await jest.advanceTimersByTimeAsync(30_000);
+      await jest.advanceTimersByTimeAsync(60_000);
+      const response = await responsePromise;
 
       expect(response).toBeNull();
+      expect(consoleSpy).toHaveBeenCalled();
+    });
+
+    it('should retry with backoff and succeed on the third attempt', async () => {
+      jest.useFakeTimers();
+      const url = buildExtractUrl({ type: 'OdpisAktualny', rejestr: 'P', krs: TEST_KRS_NUMBER });
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+      const fetchSpy = jest
+        .spyOn(global, 'fetch')
+        .mockRejectedValueOnce(new Error('network error'))
+        .mockRejectedValueOnce(new Error('network error'))
+        .mockResolvedValueOnce({
+          ok: true,
+          status: 200,
+          json: async () => SAMPLE_ODPIS_AKTUALNY,
+        } as Response);
+
+      const responsePromise = makeKRSRequest<KrsExtract>(url);
+      await jest.advanceTimersByTimeAsync(30_000);
+      await jest.advanceTimersByTimeAsync(60_000);
+      const response = await responsePromise;
+
+      expect(fetchSpy).toHaveBeenCalledTimes(3);
+      expect(response).toEqual(SAMPLE_ODPIS_AKTUALNY);
       expect(consoleSpy).toHaveBeenCalled();
     });
   });
