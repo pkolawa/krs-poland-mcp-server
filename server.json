@@ -4,7 +4,7 @@
   "description": "Polish National registry of businesses and other legal entities",
   "status": "active",
   "repository": {
-  "url": "https://github.com/pkolawa/krs-poland-mcp-server",
+    "url": "https://github.com/pkolawa/krs-poland-mcp-server",
     "source": "github"
   },
   "version": "1.0.17",
