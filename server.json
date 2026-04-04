@@ -7,13 +7,13 @@
     "url": "https://github.com/pkolawa/krs-poland-mcp-server",
     "source": "github"
   },
-  "version": "1.2.0",
+  "version": "1.2.2",
   "packages": [
     {
       "registryBaseUrl": "https://registry.npmjs.org",
       "registryType": "npm",
       "identifier": "krs-poland-mcp-server",
-      "version": "1.2.0",
+      "version": "1.2.2",
       "transport": {
         "type": "stdio"
       }
