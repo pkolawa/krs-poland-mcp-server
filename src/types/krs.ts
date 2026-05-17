@@ -1,5 +1,48 @@
+export interface KrsNaglowek {
+  dataCzasOdpisu?: string;
+  numerKRS?: string;
+  rejestr?: string;
+  stanPozycji?: number;
+  stanZDnia?: string;
+  [key: string]: unknown;
+}
+
+export interface KrsDanePodmiotu {
+  nazwa?: Array<{ nazwa?: string; [key: string]: unknown }>;
+  formaPrawna?: string;
+  siedziba?: string;
+  adres?: string;
+  nip?: string;
+  regon?: string;
+  [key: string]: unknown;
+}
+
+export interface KrsDzial {
+  danePodmiotu?: KrsDanePodmiotu;
+  [key: string]: unknown;
+}
+
+export interface KrsOdpisDane {
+  dzial1?: KrsDzial;
+  dzial2?: KrsDzial;
+  dzial3?: KrsDzial;
+  dzial4?: KrsDzial;
+  dzial5?: KrsDzial;
+  dzial6?: KrsDzial;
+  [key: string]: unknown;
+}
+
+export interface KrsOdpis {
+  rodzaj?: string;
+  naglowekP?: KrsNaglowek;
+  naglowekS?: KrsNaglowek;
+  naglowek?: KrsNaglowek;
+  dane?: KrsOdpisDane;
+  [key: string]: unknown;
+}
+
 export interface KrsExtract {
-  // Many providers show a top-level split into działy (1..6) for odpisy.
+  odpis?: KrsOdpis;
   dzial1?: {
     danePodstawowe?: {
       numerKRS?: string;
@@ -9,6 +52,7 @@ export interface KrsExtract {
       adres?: string;
       nip?: string;
       regon?: string;
+      [key: string]: unknown;
     };
     [key: string]: unknown;
   };
@@ -21,5 +65,5 @@ export interface KrsExtract {
     [key: string]: unknown;
   };
   nazwa?: string;
-  [key: string]: unknown; // keep schema-open for all other sections/fields
+  [key: string]: unknown;
 }
