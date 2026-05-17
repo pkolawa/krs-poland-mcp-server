@@ -20,7 +20,7 @@ describe("MCP Server", () => {
   it("has correct server name and version", () => {
     const info = internals().server._serverInfo;
     expect(info.name).toBe("KRS Poland MCP Server");
-    expect(info.version).toBe("1.2.2");
+    expect(info.version).toBe("1.2.3");
   });
 
   it("registers Get_Current_KRS_Record tool", () => {

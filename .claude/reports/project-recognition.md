@@ -5,7 +5,7 @@
 ## 1. Rozpoznanie projektu
 
 - **Typ:** Serwer MCP (Model Context Protocol) — narzędzie CLI do integracji z asystentami AI
-- **Wersja:** 1.2.2
+- **Wersja:** 1.2.3
 - **Licencja:** MIT
 - **Autor:** Piotr Kolawa
 
