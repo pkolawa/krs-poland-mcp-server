@@ -10,7 +10,8 @@
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "jest --testPathIgnorePatterns=api.integration.test.ts",
     "test:integration": "jest --runTestsByPath src/utils/api.integration.test.ts",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "version": "node scripts/sync-version.mjs && git add src/server.ts"
   },
   "repository": {
     "type": "git",

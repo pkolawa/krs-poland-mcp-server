@@ -1,4 +1,10 @@
 import { server } from "./server.js";
+import { readFileSync } from "fs";
+import { resolve } from "path";
+
+const pkg = JSON.parse(
+  readFileSync(resolve(__dirname, "..", "package.json"), "utf8")
+);
 
 type ServerInternals = {
   server: { _serverInfo: { name: string; version: string } };
@@ -17,10 +23,10 @@ function internals(): ServerInternals {
 }
 
 describe("MCP Server", () => {
-  it("has correct server name and version", () => {
+  it("has correct server name and version matching package.json", () => {
     const info = internals().server._serverInfo;
     expect(info.name).toBe("KRS Poland MCP Server");
-    expect(info.version).toBe("1.2.3");
+    expect(info.version).toBe(pkg.version);
   });
 
   it("registers Get_Current_KRS_Record tool", () => {
