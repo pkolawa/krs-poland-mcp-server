@@ -4,7 +4,7 @@ import { getKrsFullExtractTool } from "./tools/fullExtract.js";
 
 export const server = new McpServer({
   name: "KRS Poland MCP Server",
-  version: "1.3.3",
+  version: "1.3.4",
 });
 
 server.registerTool("Get_Current_KRS_Record",
