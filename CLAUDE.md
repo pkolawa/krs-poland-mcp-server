@@ -11,11 +11,23 @@ Serwer MCP udostępniający dane z publicznego API Krajowego Rejestru Sądowego 
 
 ## Komendy
 
-- `npm run build` — lint + unit tests + esbuild bundle
+- `npm run build` — unit tests + esbuild bundle
 - `npm run test:unit` — testy unit (mockowany fetch)
 - `npm run test:integration` — testy z prawdziwym API KRS
 - `npm run lint` — ESLint
 - `npm run typecheck` — TypeScript strict mode
+
+## Wydawanie wersji
+
+1. `npm version patch|minor|major` — hook `version` uruchamia `scripts/sync-version.mjs`
+   (aktualizuje `src/server.ts` i `server.json`), tworzy commit i tag.
+2. `npm publish` — reszta dzieje się automatycznie:
+   - `prepublishOnly`: preflight (sync wersji, blokada duplikatu na npm) → lint → typecheck
+     → build → weryfikacja `build/index.mjs`
+   - `postpublish`: `git push --follow-tags` + `mcp-publisher publish`
+3. Ręcznie zostaje tylko PR `dev` → `main`.
+
+Wymagane logowania: `npm login` oraz `mcp-publisher login github` (token rejestru wygasa).
 
 ## Konwencje
 
