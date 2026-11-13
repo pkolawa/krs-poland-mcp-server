@@ -1,20 +1,26 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { getKrsCurrentExtractTool } from "./tools/currentExtract.js";
-import { getKrsFullExtractTool } from "./tools/fullExtract.js";
+import { getKrsCurrentExtractTool, getKrsFullExtractTool } from "./tools/extract.js";
 import { checkKrsStatusTool } from "./tools/checkStatus.js";
 import { checkKrsWatchlistTool, MAX_RANGE_DAYS, MAX_WATCHED_KRS } from "./tools/watchlist.js";
 import { getKrsEntryHistoryTool } from "./tools/entryHistory.js";
+import { getKrsEntityProfileTool } from "./tools/entityProfile.js";
+import { counterpartyCheckPrompt } from "./prompts/counterpartyCheck.js";
 
 export const server = new McpServer({
   name: "KRS Poland MCP Server",
-  version: "1.4.0",
+  version: "1.5.0",
 });
 
 server.registerTool("Get_Current_KRS_Record",
     {
         title: "get-krs-current-extract",
-        description: "Get current status of the entity in KRS",
-        inputSchema: getKrsCurrentExtractTool.schema
+        description:
+            "Get the raw current extract (odpis aktualny) of an entity from KRS as JSON – all register sections " +
+            "as they stand today (tens of thousands of characters for a large company; prefer Check_KRS_Status " +
+            "for a compact answer). Entities struck off the register have no current extract. " +
+            "The register (P/S) is optional – both are checked when omitted.",
+        inputSchema: getKrsCurrentExtractTool.schema,
+        annotations: { readOnlyHint: true, openWorldHint: true }
     },
     (params) => getKrsCurrentExtractTool.handler(params)
 );
@@ -22,8 +28,13 @@ server.registerTool("Get_Current_KRS_Record",
 server.registerTool("Get_Full_KRS_Record",
     {
         title: "get-krs-full-extract",
-        description: "Get full status of the entity in KRS",
-        inputSchema: getKrsFullExtractTool.schema
+        description:
+            "Get the raw full extract (odpis pełny) of an entity from KRS as JSON – current data plus the complete " +
+            "history of register entries (hundreds of thousands of characters for a large company; prefer " +
+            "Get_KRS_Entry_History for the history). Available also for entities struck off the register. " +
+            "The register (P/S) is optional – both are checked when omitted.",
+        inputSchema: getKrsFullExtractTool.schema,
+        annotations: { readOnlyHint: true, openWorldHint: true }
     },
     (params) => getKrsFullExtractTool.handler(params)
 );
@@ -72,4 +83,31 @@ server.registerTool("Get_KRS_Entry_History",
         annotations: { readOnlyHint: true, openWorldHint: true }
     },
     (params) => getKrsEntryHistoryTool.handler(params)
+);
+
+server.registerTool("Get_KRS_Entity_Profile",
+    {
+        title: "get-krs-entity-profile",
+        description:
+            "Get a compact profile of an entity from its current KRS extract: NIP/REGON (with NIP status), seat and " +
+            "address, contact and e-delivery address, share capital, representation (who can act for the entity and how: " +
+            "the board's composition by function and the representation rule, commercial proxies, attorneys; liquidators " +
+            "or a trustee when applicable), supervisory board, owners (shareholders that are companies are named, people " +
+            "are not), PKD activity codes, purpose and public-benefit status for associations, branches, and a one-line " +
+            "status assessment. Personal data is never returned. The register (P/S) is optional – both are checked when omitted.",
+        inputSchema: getKrsEntityProfileTool.schema,
+        annotations: { readOnlyHint: true, openWorldHint: true }
+    },
+    (params) => getKrsEntityProfileTool.handler(params)
+);
+
+server.registerPrompt("weryfikacja-kontrahenta",
+    {
+        title: "Weryfikacja kontrahenta w KRS",
+        description:
+            "Prowadzi przez kartę podmiotu, kontrolę statusu i historię zmian z ostatnich 12 miesięcy, a potem prosi " +
+            "o raport z oceną (zielona/żółta/czerwona) i odpowiedzią, kto może podpisać umowę w imieniu podmiotu.",
+        argsSchema: counterpartyCheckPrompt.argsSchema
+    },
+    (args) => counterpartyCheckPrompt.build(args)
 );

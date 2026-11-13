@@ -6,6 +6,7 @@ import {
   buildExtractUrls,
   fetchBulletin,
   fetchKrs,
+  fetchKrsExtractFromRegisters,
   makeKRSRequest,
   normalizeKrsNumber,
 } from "./api.js";
@@ -371,6 +372,115 @@ describe('KRS API Utilities', () => {
 
       expect(result).toEqual({ status: 'error', error: 'HTTP 503' });
       expect(fetchSpy).toHaveBeenCalledTimes(3);
+    });
+  });
+
+  describe('cache', () => {
+    const url = buildExtractUrl({ type: 'OdpisAktualny', rejestr: 'P', krs: TEST_KRS_NUMBER });
+    const ok = (body: unknown = SAMPLE_ODPIS_AKTUALNY) => ({ ok: true, status: 200, json: async () => body }) as Response;
+    const notFound = () => ({ ok: false, status: 404, json: async () => ({}) }) as Response;
+    const originalTtl = process.env.KRS_CACHE_TTL_SECONDS;
+
+    afterEach(() => {
+      jest.useRealTimers();
+      jest.restoreAllMocks();
+      if (originalTtl === undefined) delete process.env.KRS_CACHE_TTL_SECONDS;
+      else process.env.KRS_CACHE_TTL_SECONDS = originalTtl;
+    });
+
+    it('answers a repeated request from memory', async () => {
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue(ok());
+
+      const first = await fetchKrs<KrsExtract>(url);
+      const second = await fetchKrs<KrsExtract>(url);
+
+      expect(second).toEqual(first);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('remembers "not found" too, but not errors', async () => {
+      jest.spyOn(console, 'error').mockImplementation(() => undefined);
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue(notFound());
+      await fetchKrs(url);
+      await fetchKrs(url);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+      const other = buildExtractUrl({ type: 'OdpisAktualny', rejestr: 'S', krs: TEST_KRS_NUMBER });
+      fetchSpy.mockResolvedValue({ ok: false, status: 400, json: async () => ({}) } as Response);
+      expect(await fetchKrs(other)).toEqual({ status: 'error', error: 'HTTP 400' });
+      fetchSpy.mockResolvedValue(ok());
+      expect((await fetchKrs(other)).status).toBe('ok');
+    });
+
+    it('shares one request between concurrent callers', async () => {
+      let resolve: (value: Response) => void = () => undefined;
+      const fetchSpy = jest.spyOn(global, 'fetch').mockReturnValue(new Promise<Response>((r) => (resolve = r)));
+
+      const pending = [fetchKrs(url), fetchKrs(url), fetchKrs(url)];
+      resolve(ok());
+      const results = await Promise.all(pending);
+
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+      expect(results.every((result) => result.status === 'ok')).toBe(true);
+    });
+
+    it('expires entries after 10 minutes', async () => {
+      jest.useFakeTimers();
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue(ok());
+
+      await fetchKrs(url);
+      jest.setSystemTime(Date.now() + 9 * 60_000);
+      await fetchKrs(url);
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+
+      jest.setSystemTime(Date.now() + 2 * 60_000);
+      await fetchKrs(url);
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('can be turned off with KRS_CACHE_TTL_SECONDS=0', async () => {
+      process.env.KRS_CACHE_TTL_SECONDS = '0';
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue(ok());
+
+      await fetchKrs(url);
+      await fetchKrs(url);
+
+      expect(fetchSpy).toHaveBeenCalledTimes(2);
+    });
+
+    it('keeps only the 50 most recently used entries', async () => {
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue(ok());
+      const urlFor = (n: number) => buildExtractUrl({ type: 'OdpisPelny', rejestr: 'P', krs: String(n).padStart(10, '0') });
+
+      for (let n = 1; n <= 51; n++) await fetchKrs(urlFor(n));
+      expect(fetchSpy).toHaveBeenCalledTimes(51);
+
+      await fetchKrs(urlFor(51)); // still cached
+      await fetchKrs(urlFor(1)); // evicted as the least recently used
+      expect(fetchSpy).toHaveBeenCalledTimes(52);
+    });
+  });
+
+  describe('fetchKrsExtractFromRegisters', () => {
+    afterEach(() => jest.restoreAllMocks());
+
+    it('returns the first register that has the entity, and not_found / error otherwise', async () => {
+      jest.spyOn(console, 'error').mockImplementation(() => undefined);
+      jest.spyOn(global, 'fetch').mockImplementation(async (input) => {
+        const rejestr = new URL(String(input)).searchParams.get('rejestr');
+        const krs = String(input).match(/\d{10}/)?.[0];
+        if (krs === '0000000001' && rejestr === 'S') return { ok: true, status: 200, json: async () => SAMPLE_ODPIS_AKTUALNY } as Response;
+        if (krs === '0000000003') return { ok: false, status: 400, json: async () => ({}) } as Response;
+        return { ok: false, status: 404, json: async () => ({}) } as Response;
+      });
+
+      expect(await fetchKrsExtractFromRegisters('OdpisAktualny', '0000000001', ['P', 'S'])).toEqual({
+        status: 'ok',
+        rejestr: 'S',
+        data: SAMPLE_ODPIS_AKTUALNY,
+      });
+      expect(await fetchKrsExtractFromRegisters('OdpisAktualny', '0000000002', ['P', 'S'])).toEqual({ status: 'not_found' });
+      expect(await fetchKrsExtractFromRegisters('OdpisAktualny', '0000000003', ['P', 'S'])).toEqual({ status: 'error' });
     });
   });
 });

@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { fetchKrsExtract } from "../utils/api.js";
+import { fetchKrsExtractFromRegisters } from "../utils/api.js";
 import { KrsExtract } from "../types/krs.js";
-import { krsNumberSchema, Rejestr, rejestrSchema } from "../schemas/krs.js";
+import { krsLookupInputSchema, Rejestr, registersToCheck } from "../schemas/krs.js";
 import { formatCompactJson } from "../utils/format.js";
 import { plural } from "../analysis/status.js";
 import {
@@ -78,10 +78,7 @@ function render(extract: KrsExtract, rejestr: Rejestr, args: EntryHistoryArgs): 
  */
 export const getKrsEntryHistoryTool = {
   schema: {
-    krs: krsNumberSchema,
-    rejestr: rejestrSchema
-      .optional()
-      .describe("Rejestr: P – przedsiębiorców, S – stowarzyszeń. Pomiń, aby sprawdzić oba rejestry."),
+    ...krsLookupInputSchema,
     odDaty: z
       .string()
       .regex(/^(\d{2}\.\d{2}\.\d{4}|\d{4}-\d{2}-\d{2})$/, "Data w formacie dd.mm.yyyy lub yyyy-mm-dd")
@@ -104,18 +101,12 @@ export const getKrsEntryHistoryTool = {
   },
   handler: async (args: EntryHistoryArgs) => {
     const { krs, rejestr } = args;
-    const registers: Rejestr[] = rejestr ? [rejestr] : ["P", "S"];
+    const registers = registersToCheck(rejestr);
+    const result = await fetchKrsExtractFromRegisters<KrsExtract, Rejestr>("OdpisPelny", krs, registers);
 
-    let apiFailed = false;
-    for (const reg of registers) {
-      const result = await fetchKrsExtract<KrsExtract>({ type: "OdpisPelny", rejestr: reg, krs });
-      if (result.status === "ok") return textResult(render(result.data, reg, args));
-      if (result.status === "error") apiFailed = true;
-    }
-
-    // Without a definite "not found" we cannot tell a missing entity from an API outage.
+    if (result.status === "ok") return textResult(render(result.data, result.rejestr, args));
     return textResult(
-      apiFailed
+      result.status === "error"
         ? `Nie udało się pobrać odpisu pełnego dla KRS ${krs} – API KRS zwróciło błąd. Spróbuj ponownie później.`
         : `Nie znaleziono podmiotu o numerze KRS ${krs} w rejestrze ${registers.join(" ani ")}.`
     );

@@ -239,17 +239,11 @@ describe("describeEntry", () => {
     });
   });
 
-  it("collapses the fields of a new list item (board member) into one value", () => {
+  it("collapses the fields of a new list item (board member) into one value without personal data", () => {
     expect(field(2, "dzial2.reprezentacja.sklad")).toEqual({
       pole: "dzial2.reprezentacja.sklad",
       wprowadzono: [
-        {
-          nazwisko: { nazwiskoICzlon: "B*****" },
-          imiona: { imie: "J***" },
-          identyfikator: { pesel: "7**********" },
-          czyZawieszona: false,
-          funkcjaWOrganie: "CZŁONEK ZARZĄDU",
-        },
+        { osobaFizyczna: true, czyZawieszona: false, funkcjaWOrganie: "CZŁONEK ZARZĄDU" },
       ],
     });
   });
@@ -259,12 +253,7 @@ describe("describeEntry", () => {
       pole: "dzial2.reprezentacja.sklad",
       zmieniono: [
         {
-          dotyczy: {
-            nazwisko: { nazwiskoICzlon: "B*****" },
-            imiona: { imie: "J***" },
-            identyfikator: { pesel: "7**********" },
-            czyZawieszona: false,
-          },
+          dotyczy: { osobaFizyczna: true, czyZawieszona: false },
           przed: { funkcjaWOrganie: "CZŁONEK ZARZĄDU" },
           po: { funkcjaWOrganie: "WICEPREZES ZARZĄDU" },
         },

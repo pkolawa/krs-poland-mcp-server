@@ -1,4 +1,5 @@
 import { Rejestr } from "../schemas/krs.js";
+import { withoutPersonalData } from "./values.js";
 import { KrsExtract, KrsWpis } from "../types/krs.js";
 import { getEntityName, getNaglowek } from "../utils/format.js";
 import { formatKrsDate, parseKrsDate, plural } from "./status.js";
@@ -29,7 +30,7 @@ const MAX_TEXT_LENGTH = 300;
 
 const NOTES = [
   "Historia wyliczona z odpisu pełnego KRS: pole jest przypisane do wpisu, który je wprowadził (nrWpisuWprow) lub wykreślił (nrWpisuWykr).",
-  "Dane osobowe (imiona, nazwiska, PESEL) API KRS zwraca zamaskowane.",
+  "Dane osób fizycznych są pomijane – zmiana składu organu podaje funkcję i znacznik osobaFizyczna.",
 ];
 
 type UnknownRecord = Record<string, unknown>;
@@ -475,7 +476,10 @@ export function describeEntry(extract: KrsExtract, rejestr: Rejestr, krs: string
   const changes = units.flatMap((unit) =>
     Array.isArray(unit) ? (itemChange(unit, numerWpisu) ?? []) : plainFieldChanges(unit, numerWpisu)
   );
-  const { zmiany, pominieto } = groupChanges(changes);
+  const grouped = groupChanges(changes);
+  const pominieto = grouped.pominieto;
+  // Board members, shareholders and proxies: keep the role, drop the person's (masked) name, PESEL and birth date.
+  const zmiany = grouped.zmiany.map((change) => withoutPersonalData(change) as FieldChanges);
 
   const sygnatura = str(entry.sygnaturaAktSprawyDotyczacejWpisu);
   const sad = str(entry.oznaczenieSaduDokonujacegoWpisu);

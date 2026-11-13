@@ -14,8 +14,17 @@ export const rejestrSchema = z
   .transform((val) => val.toUpperCase() as Rejestr)
   .describe("Rejestr: P – przedsiębiorców, S – stowarzyszeń (P/S, wielkość liter bez znaczenia)");
 
-/** Wejście narzędzi zwracających odpis: numer KRS + wymagany rejestr. */
-export const krsExtractInputSchema = {
+export const optionalRejestrSchema = rejestrSchema
+  .optional()
+  .describe("Rejestr: P – przedsiębiorców, S – stowarzyszeń. Pomiń, aby sprawdzić oba rejestry.");
+
+/** Wejście narzędzi wyszukujących podmiot: numer KRS + opcjonalny rejestr. */
+export const krsLookupInputSchema = {
   krs: krsNumberSchema,
-  rejestr: rejestrSchema,
+  rejestr: optionalRejestrSchema,
 };
+
+/** Rejestry do sprawdzenia: podany albo kolejno P i S (większość podmiotów jest w rejestrze przedsiębiorców). */
+export function registersToCheck(rejestr?: Rejestr): Rejestr[] {
+  return rejestr ? [rejestr] : ["P", "S"];
+}

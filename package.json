@@ -1,11 +1,12 @@
 {
   "mcpName": "io.github.pkolawa/krs-poland-mcp-server",
   "name": "krs-poland-mcp-server",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "The MCP server for KRS Poland public API.",
   "main": "./build/index.mjs",
   "scripts": {
     "build": "npm run test:unit && node build.mjs",
+    "start": "node build/index.mjs",
     "lint": "eslint \"src/**/*.ts\"",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "jest --testPathIgnorePatterns=api.integration.test.ts",
@@ -37,12 +38,15 @@
   "bin": {
     "krs-poland-mcp-server": "build/index.mjs"
   },
+  "engines": {
+    "node": ">=18"
+  },
   "bugs": {
     "url": "https://github.com/pkolawa/krs-poland-mcp-server/issues"
   },
   "homepage": "https://github.com/pkolawa/krs-poland-mcp-server#readme",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.32.1",
+    "@modelcontextprotocol/sdk": "^1.32.2",
     "zod": "^4.6.7"
   },
   "devDependencies": {
