@@ -11,7 +11,9 @@ const buildOptions = {
   target: 'node16',
   outfile: 'build/index.mjs',
   format: 'esm',
-  external: ['@modelcontextprotocol/sdk'],
+  // Runtime dependencies are installed from package.json. zod stays external so the server and the SDK
+  // share one copy (bundling zod 4 also inflated the output to ~800 kB).
+  external: ['@modelcontextprotocol/sdk', 'zod'],
   banner: {
     js: '#!/usr/bin/env node',
   },
