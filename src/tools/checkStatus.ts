@@ -2,10 +2,8 @@ import { fetchKrsExtractFromRegisters } from "../utils/api.js";
 import { KrsExtract } from "../types/krs.js";
 import { krsLookupInputSchema, Rejestr, registersToCheck } from "../schemas/krs.js";
 import { analyzeCurrentExtract, analyzeEntityWithoutCurrentExtract, StatusReport } from "../analysis/status.js";
+import { errorResult, textResult } from "./result.js";
 
-function textResult(text: string) {
-  return { content: [{ type: "text" as const, text }] };
-}
 
 function formatReport(report: StatusReport): string {
   const name = report.nazwa ?? "Nieznana nazwa";
@@ -61,7 +59,7 @@ export const checkKrsStatusTool = {
       case "without_current":
         return textResult(formatReport(lookup.report));
       case "error":
-        return textResult(
+        return errorResult(
           lookup.stage === "OdpisAktualny"
             ? `Nie udało się pobrać odpisu aktualnego dla KRS ${krs} – API KRS zwróciło błąd. Spróbuj ponownie później.`
             : `Nie udało się ustalić statusu KRS ${krs} – API KRS zwróciło błąd przy pobieraniu odpisu pełnego.`

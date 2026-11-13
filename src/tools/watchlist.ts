@@ -5,6 +5,7 @@ import { getLastEntry, LastEntry } from "../utils/format.js";
 import { krsNumberSchema, Rejestr } from "../schemas/krs.js";
 import { parseKrsDate, StatusAssessment } from "../analysis/status.js";
 import { lookupEntityStatus } from "./checkStatus.js";
+import { errorResult, textResult } from "./result.js";
 
 /**
  * Obserwowane podmioty: które z podanych numerów KRS miały wpis w rejestrze danego dnia
@@ -132,13 +133,10 @@ function dayCount(count: number): string {
   return `${count} ${count === 1 ? "dzień" : "dni"}`;
 }
 
-function textResult(text: string, isError = false) {
-  return isError ? { content: [{ type: "text" as const, text }], isError } : { content: [{ type: "text" as const, text }] };
-}
 
 export async function checkWatchlist(args: WatchlistArgs, now: Date = new Date()) {
   const range = resolveDateRange(args, now);
-  if (typeof range === "string") return textResult(range, true);
+  if (typeof range === "string") return errorResult(range);
 
   const watched = [...new Set(args.krs)];
   const watchedSet = new Set(watched);
@@ -162,10 +160,9 @@ export async function checkWatchlist(args: WatchlistArgs, now: Date = new Date()
   }
 
   if (failedDays.length === range.days.length) {
-    return textResult(
+    return errorResult(
       `Nie udało się pobrać biuletynu KRS za ${rangeLabel(range)} – API KRS zwróciło błąd ` +
-        `(${failedDays[0].blad}). Spróbuj ponownie później.`,
-      true
+        `(${failedDays[0].blad}). Spróbuj ponownie później.`
     );
   }
 

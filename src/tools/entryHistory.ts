@@ -14,6 +14,7 @@ import {
   MAX_ENTRY_LIMIT,
   parseDateInput,
 } from "../analysis/history.js";
+import { errorResult, textResult } from "./result.js";
 
 export interface EntryHistoryArgs {
   krs: string;
@@ -23,9 +24,6 @@ export interface EntryHistoryArgs {
   limit?: number;
 }
 
-function textResult(text: string) {
-  return { content: [{ type: "text" as const, text }] };
-}
 
 function entityLabel(report: { nazwa: string | null; krs: string; rejestr: Rejestr }): string {
   return `${report.nazwa ?? "Nieznana nazwa"} (KRS ${report.krs}, rejestr ${report.rejestr})`;
@@ -105,10 +103,9 @@ export const getKrsEntryHistoryTool = {
     const result = await fetchKrsExtractFromRegisters<KrsExtract, Rejestr>("OdpisPelny", krs, registers);
 
     if (result.status === "ok") return textResult(render(result.data, result.rejestr, args));
-    return textResult(
-      result.status === "error"
-        ? `Nie udało się pobrać odpisu pełnego dla KRS ${krs} – API KRS zwróciło błąd. Spróbuj ponownie później.`
-        : `Nie znaleziono podmiotu o numerze KRS ${krs} w rejestrze ${registers.join(" ani ")}.`
-    );
+    if (result.status === "error") {
+      return errorResult(`Nie udało się pobrać odpisu pełnego dla KRS ${krs} – API KRS zwróciło błąd. Spróbuj ponownie później.`);
+    }
+    return textResult(`Nie znaleziono podmiotu o numerze KRS ${krs} w rejestrze ${registers.join(" ani ")}.`);
   },
 };
