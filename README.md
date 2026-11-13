@@ -36,6 +36,14 @@ To integrate this server with an LLM client (like LM Studio or others that suppo
 
 This configuration tells the client how to start the KRS tool server.
 
+### Cache
+
+Responses of the KRS API are kept in memory for 10 minutes (up to 50 most recently used requests), so the status check, the profile and the history of the same entity do not download its extract again. Set `KRS_CACHE_TTL_SECONDS` in the server's environment to change the lifetime, or to `0` to turn the cache off:
+
+```json
+"env": { "KRS_CACHE_TTL_SECONDS": "0" }
+```
+
 ## Server Functions
 
 
@@ -53,6 +61,12 @@ The server provides the following tools (checklist):
   ```json
   { "krs": ["0000019193", "0000109411"], "odDaty": "2026-11-01", "doDaty": "2026-11-12" }
   ```
+
+## Prompts
+
+- **Weryfikacja kontrahenta w KRS** (`weryfikacja-kontrahenta`): arguments `krs` (required), `rejestr` and `kontekst` (e.g. "umowa dostawy na 200 tys. zł"). Walks the model through the entity profile, the status check and the last 12 months of register entries, and asks for a report with a green/yellow/red assessment and a plain answer to who can sign a contract on the entity's behalf.
+
+All tools are read-only and none of the analytic tools return personal data of natural persons (the KRS API masks names and PESEL numbers but not, for example, birth dates).
 
 ## Development
 

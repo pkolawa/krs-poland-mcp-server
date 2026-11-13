@@ -16,3 +16,11 @@
 ## Drobne usprawnienia
 - [x] Dodać test rejestracji narzędzi MCP w `src/server.ts`
 - [x] Rozważyć lepsze formatowanie odpowiedzi — wyciąganie kluczowych danych (nazwa, NIP, adres, zarząd) zamiast zwracania surowego JSON — `Get_KRS_Entity_Profile`
+
+## Kolejne kroki (zweryfikowane 2026-11-13)
+- [ ] Migracja ESLint 8 → 9/10 (flat config) — ESLint 8 nie jest już wspierany; usunie też podatności w devDependencies
+- [ ] `Check_KRS_Status`: sygnał dla `statusNip: "UCHYLONY"` (API podaje status i datę decyzji; dziś widać go tylko w karcie podmiotu)
+- [ ] Zasoby MCP (resources) z odpisami, np. `krs://P/0000019193/aktualny`
+- [ ] Porównanie kilku podmiotów (karta/status obok siebie)
+- [ ] Filtr działów dla `Get_Full_KRS_Record` (np. tylko `dzial2`) – odpis pełny dużej spółki ma setki tysięcy znaków
+

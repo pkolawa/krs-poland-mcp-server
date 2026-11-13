@@ -7,6 +7,7 @@ const pkg = JSON.parse(
 );
 
 type ServerInternals = {
+  _registeredPrompts: Record<string, { title?: string; description?: string; argsSchema?: { shape: Record<string, unknown> } }>;
   server: { _serverInfo: { name: string; version: string } };
   _registeredTools: Record<
     string,
@@ -106,5 +107,12 @@ describe("MCP Server", () => {
     for (const [name, tool] of Object.entries(internals()._registeredTools)) {
       expect({ name, annotations: tool.annotations }).toEqual({ name, annotations: { readOnlyHint: true, openWorldHint: true } });
     }
+  });
+
+  it("registers the weryfikacja-kontrahenta prompt with krs, rejestr and kontekst arguments", () => {
+    const prompt = internals()._registeredPrompts["weryfikacja-kontrahenta"];
+    expect(prompt).toBeDefined();
+    expect(prompt.title).toBe("Weryfikacja kontrahenta w KRS");
+    expect(Object.keys(prompt.argsSchema?.shape ?? {})).toEqual(["krs", "rejestr", "kontekst"]);
   });
 });

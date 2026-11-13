@@ -4,6 +4,7 @@ import { checkKrsStatusTool } from "./tools/checkStatus.js";
 import { checkKrsWatchlistTool, MAX_RANGE_DAYS, MAX_WATCHED_KRS } from "./tools/watchlist.js";
 import { getKrsEntryHistoryTool } from "./tools/entryHistory.js";
 import { getKrsEntityProfileTool } from "./tools/entityProfile.js";
+import { counterpartyCheckPrompt } from "./prompts/counterpartyCheck.js";
 
 export const server = new McpServer({
   name: "KRS Poland MCP Server",
@@ -98,4 +99,15 @@ server.registerTool("Get_KRS_Entity_Profile",
         annotations: { readOnlyHint: true, openWorldHint: true }
     },
     (params) => getKrsEntityProfileTool.handler(params)
+);
+
+server.registerPrompt("weryfikacja-kontrahenta",
+    {
+        title: "Weryfikacja kontrahenta w KRS",
+        description:
+            "Prowadzi przez kartę podmiotu, kontrolę statusu i historię zmian z ostatnich 12 miesięcy, a potem prosi " +
+            "o raport z oceną (zielona/żółta/czerwona) i odpowiedzią, kto może podpisać umowę w imieniu podmiotu.",
+        argsSchema: counterpartyCheckPrompt.argsSchema
+    },
+    (args) => counterpartyCheckPrompt.build(args)
 );

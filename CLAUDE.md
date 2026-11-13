@@ -19,6 +19,10 @@ Serwer MCP udostępniający dane z publicznego API Krajowego Rejestru Sądowego 
   do wpisu z `nrWpisuWprow` (wprowadzenie) i `nrWpisuWykr` (wykreślenie). Pola elementu listy (członek zarządu,
   kod PKD, oddział) są składane w jedną zmianę; wersje wprowadzone i wykreślone tym samym wpisem są pomijane
   (zmiana netto zero). Odpowiedź ma budżet wartości (~4 tys. znaków), reszta trafia do liczników `pominieto`
+- Cache w pamięci (`cached` w `src/utils/api.ts`): wyniki `ok` i `not_found` przez 10 min (`KRS_CACHE_TTL_SECONDS`, 0 = wyłączony),
+  maks. 50 ostatnio używanych zapytań; błędy nie są zapamiętywane; równoległe zapytania o ten sam adres dzielą jedno.
+  W testach cache czyści `src/test-setup.ts` przed każdym testem
+- Prompt MCP `weryfikacja-kontrahenta` (`src/prompts/counterpartyCheck.ts`): karta → status → historia 12 mies. → raport
 - Build: esbuild do jednego pliku ESM (`build/index.mjs`); `@modelcontextprotocol/sdk` i `zod` (v4) są external –
   instalowane z `dependencies`, dzięki czemu serwer i SDK używają tej samej kopii zod
 
@@ -76,6 +80,8 @@ src/utils/api.ts    — HTTP client (fetchKrs → ok / not_found / error), fetch
 src/utils/format.ts — nagłówek, odczyt nazwy/numeru/ostatniego wpisu z odpisu aktualnego i pełnego,
                       zwarty JSON (formatCompactJson)
 src/utils/concurrency.ts — mapWithConcurrency (mała współbieżność zapytań do API)
+src/prompts/         — prompty MCP (counterpartyCheck.ts: weryfikacja kontrahenta)
+src/test-setup.ts   — setup Jest (czyszczenie cache przed każdym testem)
 ```
 
 @TODO.md
