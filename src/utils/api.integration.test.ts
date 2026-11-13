@@ -1,4 +1,5 @@
 import { buildExtractUrls } from "./api.js";
+import { checkKrsStatusTool } from "../tools/checkStatus.js";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -184,4 +185,35 @@ describe("KRS public API integration", () => {
       expect(normalizeAscii(rodzaj)).toContain("pelny");
     }
   });
+});
+
+describe("Check_KRS_Status against the public API", () => {
+  async function status(krs: string): Promise<string> {
+    const result = await checkKrsStatusTool.handler({ krs });
+    return result.content[0].text;
+  }
+
+  function report(output: string): UnknownRecord {
+    return JSON.parse(output.slice(output.indexOf("{"))) as UnknownRecord;
+  }
+
+  it("finds an active entity without being told the register", async () => {
+    const output = await status("0000019193"); // PKP S.A.
+
+    expect(report(output)).toMatchObject({ krs: "0000019193", rejestr: "P" });
+    expect(["BRAK_SYGNALOW", "OSTRZEZENIA", "KRYTYCZNE"]).toContain(report(output).ocena);
+    expect(normalizeAscii(String(report(output).nazwa))).toContain("polskie koleje panstwowe");
+  }, 60_000);
+
+  it("recognizes an entity struck off the register", async () => {
+    const output = await status("0000005433"); // spółka jawna wykreślona 16.10.2026
+
+    expect(report(output)).toMatchObject({ krs: "0000005433", ocena: "WYKRESLONY" });
+  }, 60_000);
+
+  it("reports a number that does not exist as not found", async () => {
+    const output = await status("0999999999");
+
+    expect(output).toBe("Nie znaleziono podmiotu o numerze KRS 0999999999 w rejestrze P ani S.");
+  }, 60_000);
 });

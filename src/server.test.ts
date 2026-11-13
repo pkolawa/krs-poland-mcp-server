@@ -13,6 +13,7 @@ type ServerInternals = {
     {
       title: string;
       description: string;
+      annotations?: Record<string, unknown>;
       inputSchema: { shape: Record<string, unknown> };
     }
   >;
@@ -43,17 +44,34 @@ describe("MCP Server", () => {
     expect(tool.title).toBe("get-krs-full-extract");
   });
 
-  it("registers exactly 2 tools", () => {
-    expect(Object.keys(internals()._registeredTools)).toHaveLength(2);
+  it("registers Check_KRS_Status tool as read-only", () => {
+    const tool = internals()._registeredTools["Check_KRS_Status"];
+    expect(tool).toBeDefined();
+    expect(tool.title).toBe("check-krs-status");
+    expect(tool.description).toContain("risk signals");
+    expect(tool.annotations).toEqual({ readOnlyHint: true, openWorldHint: true });
+  });
+
+  it("registers exactly 3 tools", () => {
+    expect(Object.keys(internals()._registeredTools)).toHaveLength(3);
   });
 
   it("has input schemas with krs and rejestr fields", () => {
     const tools = internals()._registeredTools;
 
-    for (const name of ["Get_Current_KRS_Record", "Get_Full_KRS_Record"]) {
+    for (const name of ["Get_Current_KRS_Record", "Get_Full_KRS_Record", "Check_KRS_Status"]) {
       const shape = tools[name].inputSchema.shape;
       expect(shape).toHaveProperty("krs");
       expect(shape).toHaveProperty("rejestr");
     }
+  });
+
+  it("requires rejestr for extracts but not for the status check", () => {
+    const tools = internals()._registeredTools;
+    const rejestr = (name: string) => tools[name].inputSchema.shape.rejestr as { isOptional(): boolean };
+
+    expect(rejestr("Get_Current_KRS_Record").isOptional()).toBe(false);
+    expect(rejestr("Get_Full_KRS_Record").isOptional()).toBe(false);
+    expect(rejestr("Check_KRS_Status").isOptional()).toBe(true);
   });
 });

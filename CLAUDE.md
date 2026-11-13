@@ -5,8 +5,11 @@ Serwer MCP udostępniający dane z publicznego API Krajowego Rejestru Sądowego 
 ## Architektura
 
 - TypeScript + `@modelcontextprotocol/sdk`, transport stdio
-- Dwa narzędzia MCP: odpis aktualny (`Get_Current_KRS_Record`) i pełny (`Get_Full_KRS_Record`)
-- HTTP client z retry (30s/60s backoff) i dual URL fallback (path params + query params)
+- Trzy narzędzia MCP: odpis aktualny (`Get_Current_KRS_Record`), pełny (`Get_Full_KRS_Record`)
+  i kontrola statusu z sygnałami ostrzegawczymi (`Check_KRS_Status`)
+- HTTP client: retry (30s/60s backoff) tylko dla 5xx/408/429/błędów sieci; 404 i 204 → `not_found` bez ponawiania.
+  Kolejność URL: query params (działa), potem path params (obecnie zawsze 404 – zapas na zmianę routingu)
+- Odpis aktualny podmiotu wykreślonego zwraca 204 – wtedy jedynym źródłem jest odpis pełny (wpis „WYKREŚLENIE…”)
 - Build: esbuild do jednego pliku ESM (`build/index.mjs`)
 
 ## Komendy
@@ -31,9 +34,12 @@ Wymagane logowania: `npm login` oraz `mcp-publisher login github` (token rejestr
 
 ## Konwencje
 
-- Walidacja inputów przez Zod ze schematem inline w tool definitions
+- Walidacja inputów przez Zod – wspólne schematy w `src/schemas/krs.ts`
 - Odpowiedzi MCP zawierają `type: "text"` z JSON w treści
-- API KRS: `https://api-krs.ms.gov.pl/api/krs/{typ}/{rejestr}/{krs}?format=json`
+- API KRS: `https://api-krs.ms.gov.pl/api/krs/{typ}/{krs}?rejestr={P|S}&format=json`
+- Odpis aktualny: nagłówek `naglowekA`, pola proste. Odpis pełny: `naglowekP` z listą `wpis`,
+  pola jako tablice wersji z `nrWpisuWprow`/`nrWpisuWykr`. Puste pola API zwraca jako `{}`/`[]`
+- Dane osobowe (imiona, nazwiska, PESEL) są w API zamaskowane
 - Numer KRS: 10 cyfr zaczynających się od 0, rejestr: P (przedsiębiorców) lub S (stowarzyszeń)
 
 ## Struktura plików
@@ -42,9 +48,11 @@ Wymagane logowania: `npm login` oraz `mcp-publisher login github` (token rejestr
 src/index.ts        — entrypoint
 src/server.ts       — rejestracja narzędzi
 src/tools/          — handlery narzędzi MCP
-src/types/krs.ts    — interfejs KrsExtract
-src/utils/api.ts    — HTTP client
-src/utils/format.ts — formatowanie nagłówka
+src/schemas/krs.ts  — wspólne schematy Zod (numer KRS, rejestr)
+src/analysis/       — analiza odpisu (status.ts: sygnały z działów 2–6, wykreślenie)
+src/types/krs.ts    — interfejsy odpowiedzi API KRS
+src/utils/api.ts    — HTTP client (fetchKrs → ok / not_found / error)
+src/utils/format.ts — nagłówek oraz odczyt nazwy/numeru z odpisu aktualnego i pełnego
 ```
 
 @TODO.md
