@@ -2,6 +2,8 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { getKrsCurrentExtractTool } from "./tools/currentExtract.js";
 import { getKrsFullExtractTool } from "./tools/fullExtract.js";
 import { checkKrsStatusTool } from "./tools/checkStatus.js";
+import { checkKrsWatchlistTool, MAX_RANGE_DAYS, MAX_WATCHED_KRS } from "./tools/watchlist.js";
+import { getKrsEntryHistoryTool } from "./tools/entryHistory.js";
 
 export const server = new McpServer({
   name: "KRS Poland MCP Server",
@@ -39,4 +41,35 @@ server.registerTool("Check_KRS_Status",
         annotations: { readOnlyHint: true, openWorldHint: true }
     },
     (params) => checkKrsStatusTool.handler(params)
+);
+
+server.registerTool("Check_KRS_Watchlist",
+    {
+        title: "check-krs-watchlist",
+        description:
+            `Check which of the watched entities (up to ${MAX_WATCHED_KRS} KRS numbers) had an entry in the KRS register ` +
+            `on a given day (data) or within a date range (odDaty/doDaty, up to ${MAX_RANGE_DAYS} days), based on the ` +
+            "daily KRS bulletin. For each entity with an entry returns the bulletin days and, unless szczegoly is false, " +
+            "its name, last register entry (number, date, case reference, court) and the status assessment of " +
+            "Check_KRS_Status. Also lists entities without entries and bulletin days that could not be fetched.",
+        inputSchema: checkKrsWatchlistTool.schema,
+        annotations: { readOnlyHint: true, openWorldHint: true }
+    },
+    (params) => checkKrsWatchlistTool.handler(params)
+);
+
+server.registerTool("Get_KRS_Entry_History",
+    {
+        title: "get-krs-entry-history",
+        description:
+            "Get a compact history of an entity's entries (wpisy) in KRS, computed from the full extract " +
+            "(which for large companies runs to hundreds of thousands of characters). Without numerWpisu: lists entries " +
+            "newest first with date, description, case reference and the fields each entry changed; narrow it with " +
+            "odDaty (dd.mm.yyyy or yyyy-mm-dd) and limit. With numerWpisu: shows what that entry introduced, struck out " +
+            "and changed – e.g. name, address, capital, board members, PKD codes. Works also for entities deleted " +
+            "from the register. The register (P/S) is optional – both are checked when omitted.",
+        inputSchema: getKrsEntryHistoryTool.schema,
+        annotations: { readOnlyHint: true, openWorldHint: true }
+    },
+    (params) => getKrsEntryHistoryTool.handler(params)
 );

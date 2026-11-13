@@ -1,4 +1,4 @@
-import { currentFieldValue, formatCompanyHeadline } from "./format.js";
+import { currentFieldValue, formatCompactJson, formatCompanyHeadline, getLastEntry } from "./format.js";
 import { KrsExtract } from "../types/krs.js";
 
 describe("formatCompanyHeadline – API KRS response shapes", () => {
@@ -157,5 +157,98 @@ describe("formatCompanyHeadline", () => {
     expect(formatCompanyHeadline(extract)).toBe(
       "Nieznana nazwa (KRS 0000444444)"
     );
+  });
+});
+
+describe("getLastEntry", () => {
+  it("reads the last entry fields of odpis aktualny", () => {
+    const extract: KrsExtract = {
+      odpis: {
+        naglowekA: {
+          numerOstatniegoWpisu: 51,
+          dataOstatniegoWpisu: "12.11.2026",
+          sygnaturaAktSprawyDotyczacejOstatniegoWpisu: "SZ.XIII NS-REJ.KRS/15995/26/185",
+          oznaczenieSaduDokonujacegoOstatniegoWpisu: "SĄD REJONOWY SZCZECIN-CENTRUM W SZCZECINIE",
+        },
+      },
+    };
+    expect(getLastEntry(extract)).toEqual({
+      numer: 51,
+      data: "12.11.2026",
+      sygnatura: "SZ.XIII NS-REJ.KRS/15995/26/185",
+      sad: "SĄD REJONOWY SZCZECIN-CENTRUM W SZCZECINIE",
+    });
+  });
+
+  it("picks the highest-numbered entry of odpis pełny, with its description", () => {
+    const extract: KrsExtract = {
+      odpis: {
+        naglowekP: {
+          wpis: [
+            { numerWpisu: 40, opis: "ZMIANA DANYCH W REJESTRZE", dataWpisu: "21.07.2026" },
+            { numerWpisu: 41, opis: "WYKREŚLENIE Z KRAJOWEGO REJESTRU SĄDOWEGO", dataWpisu: "16.10.2026", dataUprawomocnienia: "29.10.2026" },
+            { numerWpisu: 39, opis: "ZMIANA DANYCH W REJESTRZE", dataWpisu: "21.07.2026" },
+          ],
+        },
+      },
+    };
+    expect(getLastEntry(extract)).toEqual({
+      numer: 41,
+      data: "16.10.2026",
+      opis: "WYKREŚLENIE Z KRAJOWEGO REJESTRU SĄDOWEGO",
+      dataUprawomocnienia: "29.10.2026",
+    });
+  });
+
+  it("returns undefined when the header has no entry data", () => {
+    expect(getLastEntry({})).toBeUndefined();
+    expect(getLastEntry({ odpis: { naglowekA: { numerKRS: "0000019193" } } })).toBeUndefined();
+  });
+});
+
+describe("formatCompactJson", () => {
+  const sample = {
+    pole: "dzial1.siedzibaIAdres.adres",
+    wprowadzono: [{ ulica: "HOŻA", nrDomu: "63/67", miejscowosc: "WARSZAWA", kraj: "POLSKA" }],
+    zmienionePola: ["dzial1.danePodmiotu.nazwa", "dzial2.reprezentacja.sklad"],
+    puste: [],
+    brak: undefined,
+    liczba: 3,
+    flaga: false,
+    nic: null,
+  };
+
+  it("produces valid JSON equal to the input (without undefined fields)", () => {
+    expect(JSON.parse(formatCompactJson(sample))).toEqual(JSON.parse(JSON.stringify(sample)));
+  });
+
+  it("keeps nested structure indented and puts flat objects and arrays on one line", () => {
+    expect(formatCompactJson(sample)).toBe(
+      [
+        "{",
+        '  "pole": "dzial1.siedzibaIAdres.adres",',
+        '  "wprowadzono": [',
+        '    { "ulica": "HOŻA", "nrDomu": "63/67", "miejscowosc": "WARSZAWA", "kraj": "POLSKA" }',
+        "  ],",
+        '  "zmienionePola": ["dzial1.danePodmiotu.nazwa", "dzial2.reprezentacja.sklad"],',
+        '  "puste": [],',
+        '  "liczba": 3,',
+        '  "flaga": false,',
+        '  "nic": null',
+        "}",
+      ].join("\n")
+    );
+  });
+
+  it("breaks a flat object that would not fit on one line", () => {
+    const long = { opis: "X".repeat(200), kod: "49.10.Z" };
+    expect(formatCompactJson(long)).toBe(`{\n  "opis": "${"X".repeat(200)}",\n  "kod": "49.10.Z"\n}`);
+  });
+
+  it("formats primitives and empty containers like JSON.stringify", () => {
+    expect(formatCompactJson("tekst")).toBe('"tekst"');
+    expect(formatCompactJson(12)).toBe("12");
+    expect(formatCompactJson({})).toBe("{}");
+    expect(formatCompactJson([undefined])).toBe("[null]");
   });
 });

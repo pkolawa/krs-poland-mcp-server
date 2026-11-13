@@ -1,5 +1,7 @@
-import { buildExtractUrls } from "./api.js";
+import { buildExtractUrls, fetchBulletin } from "./api.js";
 import { checkKrsStatusTool } from "../tools/checkStatus.js";
+import { checkWatchlist, todayInPoland } from "../tools/watchlist.js";
+import { getKrsEntryHistoryTool, EntryHistoryArgs } from "../tools/entryHistory.js";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -215,5 +217,111 @@ describe("Check_KRS_Status against the public API", () => {
     const output = await status("0999999999");
 
     expect(output).toBe("Nie znaleziono podmiotu o numerze KRS 0999999999 w rejestrze P ani S.");
+  }, 60_000);
+});
+
+describe("KRS bulletin (Biuletyn) against the public API", () => {
+  /** Weekdays before today (Polish calendar), newest first – a public holiday can leave one empty. */
+  function recentWeekdays(count: number): string[] {
+    const days: string[] = [];
+    const day = new Date(`${todayInPoland(new Date())}T00:00:00Z`);
+    while (days.length < count) {
+      day.setUTCDate(day.getUTCDate() - 1);
+      const weekday = day.getUTCDay();
+      if (weekday !== 0 && weekday !== 6) days.push(day.toISOString().slice(0, 10));
+    }
+    return days;
+  }
+
+  let sample: { day: string; numbers: string[] } | undefined;
+
+  async function recentBulletin(): Promise<{ day: string; numbers: string[] }> {
+    if (sample) return sample;
+    for (const day of recentWeekdays(5)) {
+      const result = await fetchBulletin(day);
+      if (result.status !== "ok") throw new Error(`Biuletyn ${day}: ${result.error}`);
+      if (result.data.length > 0) {
+        sample = { day, numbers: result.data };
+        return sample;
+      }
+    }
+    throw new Error("Biuletyn KRS był pusty przez ostatnie 5 dni roboczych");
+  }
+
+  it("returns a non-empty list of unique 10-digit numbers for a recent working day", async () => {
+    const { numbers } = await recentBulletin();
+
+    expect(numbers.length).toBeGreaterThan(0);
+    expect(new Set(numbers).size).toBe(numbers.length);
+    expect(numbers.every((krs) => /^\d{10}$/.test(krs))).toBe(true);
+  }, 60_000);
+
+  it("Check_KRS_Watchlist points out the watched entities listed in that day's bulletin", async () => {
+    const { day, numbers } = await recentBulletin();
+    const changed = numbers.slice(0, 2);
+    const unknown = "0999999999";
+
+    const result = await checkWatchlist({ krs: [...changed, unknown], data: day });
+    const text = result.content[0].text;
+    const report = JSON.parse(text.slice(text.indexOf("{"))) as {
+      zmiany: Array<{ krs: string; dni: string[]; ostatniWpis?: { numer: number | null }; blad?: string }>;
+      bezZmian: string[];
+    };
+
+    expect(text.split("\n")[0]).toBe(`Obserwowane podmioty w KRS – ${day}: wpisy u 2 z 3 podmiotów.`);
+    expect(report.zmiany.map((hit) => hit.krs)).toEqual(changed);
+    expect(report.bezZmian).toEqual([unknown]);
+    for (const hit of report.zmiany) {
+      expect(hit.dni).toEqual([day]);
+      expect(hit.blad).toBeUndefined();
+      expect(typeof hit.ostatniWpis?.numer).toBe("number");
+    }
+  }, 120_000);
+});
+
+describe("Get_KRS_Entry_History against the public API", () => {
+  const PKP = "0000019193";
+
+  async function history(args: EntryHistoryArgs): Promise<string> {
+    const result = await getKrsEntryHistoryTool.handler(args);
+    return result.content[0].text;
+  }
+
+  function json(output: string): UnknownRecord {
+    return JSON.parse(output.slice(output.indexOf("{"))) as UnknownRecord;
+  }
+
+  it("lists PKP entries newest first in a few thousand characters instead of the whole extract", async () => {
+    const output = await history({ krs: PKP, limit: 10 });
+    const list = json(output);
+    const numbers = (list.wpisy as Array<{ numerWpisu: number }>).map((entry) => entry.numerWpisu);
+
+    expect(list).toMatchObject({ krs: PKP, rejestr: "P", pierwszyWpis: { numerWpisu: 1, dataWpisu: "11.06.2001" } });
+    expect(list.liczbaWpisow as number).toBeGreaterThanOrEqual(216);
+    expect(numbers).toHaveLength(10);
+    expect(numbers[0]).toBe((list.ostatniWpis as { numerWpisu: number }).numerWpisu);
+    expect([...numbers].sort((a, b) => b - a)).toEqual(numbers);
+    expect(output.length).toBeLessThan(10_000);
+  }, 60_000);
+
+  it("shows what a single PKP entry changed in the management board", async () => {
+    const output = await history({ krs: PKP, rejestr: "P", numerWpisu: 189 });
+    const changes = json(output).zmiany as Array<{ pole: string; zmieniono?: unknown[] }>;
+
+    expect(output.split("\n")[0]).toBe("Wpis nr 189 z 08.01.2025 – ZMIANA DANYCH W REJESTRZE");
+    expect(changes.find((change) => change.pole === "dzial2.reprezentacja.sklad")?.zmieniono).toEqual([
+      expect.objectContaining({
+        przed: { funkcjaWOrganie: "CZŁONEK ZARZĄDU" },
+        po: { funkcjaWOrganie: "WICEPREZES ZARZĄDU" },
+      }),
+    ]);
+  }, 60_000);
+
+  it("reads the history of an entity struck off the register", async () => {
+    const output = await history({ krs: "0000005433", limit: 1 }); // spółka jawna wykreślona 16.10.2026
+
+    expect(json(output).wpisy).toEqual([
+      expect.objectContaining({ dataWpisu: "16.10.2026", opis: "WYKREŚLENIE Z KRAJOWEGO REJESTRU SĄDOWEGO" }),
+    ]);
   }, 60_000);
 });
