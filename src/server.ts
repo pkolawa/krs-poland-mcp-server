@@ -3,10 +3,11 @@ import { getKrsCurrentExtractTool } from "./tools/currentExtract.js";
 import { getKrsFullExtractTool } from "./tools/fullExtract.js";
 import { checkKrsStatusTool } from "./tools/checkStatus.js";
 import { checkKrsWatchlistTool, MAX_RANGE_DAYS, MAX_WATCHED_KRS } from "./tools/watchlist.js";
+import { getKrsEntryHistoryTool } from "./tools/entryHistory.js";
 
 export const server = new McpServer({
   name: "KRS Poland MCP Server",
-  version: "1.3.5",
+  version: "1.4.0",
 });
 
 server.registerTool("Get_Current_KRS_Record",
@@ -55,4 +56,20 @@ server.registerTool("Check_KRS_Watchlist",
         annotations: { readOnlyHint: true, openWorldHint: true }
     },
     (params) => checkKrsWatchlistTool.handler(params)
+);
+
+server.registerTool("Get_KRS_Entry_History",
+    {
+        title: "get-krs-entry-history",
+        description:
+            "Get a compact history of an entity's entries (wpisy) in KRS, computed from the full extract " +
+            "(which for large companies runs to hundreds of thousands of characters). Without numerWpisu: lists entries " +
+            "newest first with date, description, case reference and the fields each entry changed; narrow it with " +
+            "odDaty (dd.mm.yyyy or yyyy-mm-dd) and limit. With numerWpisu: shows what that entry introduced, struck out " +
+            "and changed – e.g. name, address, capital, board members, PKD codes. Works also for entities deleted " +
+            "from the register. The register (P/S) is optional – both are checked when omitted.",
+        inputSchema: getKrsEntryHistoryTool.schema,
+        annotations: { readOnlyHint: true, openWorldHint: true }
+    },
+    (params) => getKrsEntryHistoryTool.handler(params)
 );

@@ -61,26 +61,36 @@ describe("MCP Server", () => {
     expect(Object.keys(tool.inputSchema.shape).sort()).toEqual(["data", "doDaty", "krs", "odDaty", "szczegoly"]);
   });
 
-  it("registers exactly 4 tools", () => {
-    expect(Object.keys(internals()._registeredTools)).toHaveLength(4);
+  it("registers Get_KRS_Entry_History tool as read-only", () => {
+    const tool = internals()._registeredTools["Get_KRS_Entry_History"];
+    expect(tool).toBeDefined();
+    expect(tool.title).toBe("get-krs-entry-history");
+    expect(tool.description).toContain("history");
+    expect(tool.annotations).toEqual({ readOnlyHint: true, openWorldHint: true });
+    expect(Object.keys(tool.inputSchema.shape)).toEqual(["krs", "rejestr", "odDaty", "numerWpisu", "limit"]);
+  });
+
+  it("registers exactly 5 tools", () => {
+    expect(Object.keys(internals()._registeredTools)).toHaveLength(5);
   });
 
   it("has input schemas with krs and rejestr fields", () => {
     const tools = internals()._registeredTools;
 
-    for (const name of ["Get_Current_KRS_Record", "Get_Full_KRS_Record", "Check_KRS_Status"]) {
+    for (const name of ["Get_Current_KRS_Record", "Get_Full_KRS_Record", "Check_KRS_Status", "Get_KRS_Entry_History"]) {
       const shape = tools[name].inputSchema.shape;
       expect(shape).toHaveProperty("krs");
       expect(shape).toHaveProperty("rejestr");
     }
   });
 
-  it("requires rejestr for extracts but not for the status check", () => {
+  it("requires rejestr for extracts but not for the status check or the entry history", () => {
     const tools = internals()._registeredTools;
     const rejestr = (name: string) => tools[name].inputSchema.shape.rejestr as { isOptional(): boolean };
 
     expect(rejestr("Get_Current_KRS_Record").isOptional()).toBe(false);
     expect(rejestr("Get_Full_KRS_Record").isOptional()).toBe(false);
     expect(rejestr("Check_KRS_Status").isOptional()).toBe(true);
+    expect(rejestr("Get_KRS_Entry_History").isOptional()).toBe(true);
   });
 });

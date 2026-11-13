@@ -161,7 +161,8 @@ function addDays(date: Date, days: number): Date {
   return new Date(date.getTime() + days * DAY_MS);
 }
 
-function plural(n: number, one: string, few: string, many: string): string {
+/** Liczba z polską odmianą rzeczownika: 1 wpis, 2 wpisy, 5 wpisów (12–14 jak „5”). */
+export function plural(n: number, one: string, few: string, many: string): string {
   if (n === 1) return `${n} ${one}`;
   const lastDigit = n % 10;
   const lastTwo = n % 100;
