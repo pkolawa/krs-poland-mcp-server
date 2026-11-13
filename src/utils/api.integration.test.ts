@@ -125,7 +125,7 @@ async function fetchJsonOnce(url: string): Promise<unknown> {
     } catch (err) {
       const snippet = body.slice(0, 200);
       const message = err instanceof Error ? err.message : String(err);
-      throw new Error(`Invalid JSON: ${message}${snippet ? `: ${snippet}` : ""}`);
+      throw new Error(`Invalid JSON: ${message}${snippet ? `: ${snippet}` : ""}`, { cause: err });
     }
   } finally {
     clearTimeout(timeoutId);

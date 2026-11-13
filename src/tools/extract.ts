@@ -2,6 +2,7 @@ import { ExtractType, fetchKrsExtractFromRegisters } from "../utils/api.js";
 import { KrsExtract } from "../types/krs.js";
 import { krsLookupInputSchema, Rejestr, registersToCheck } from "../schemas/krs.js";
 import { formatCompanyHeadline } from "../utils/format.js";
+import { errorResult, textResult } from "./result.js";
 
 interface ExtractLabels {
   /** "Odpis aktualny" – nagłówek odpowiedzi. */
@@ -30,9 +31,6 @@ const LABELS: Record<ExtractType, ExtractLabels> = {
   },
 };
 
-function textResult(text: string) {
-  return { content: [{ type: "text" as const, text }] };
-}
 
 /**
  * Narzędzie zwracające surowy odpis KRS (aktualny albo pełny) jako JSON.
@@ -55,7 +53,7 @@ export function createExtractTool(type: ExtractType) {
               `(Zwrócono obiekt JSON z ${labels.instrumental})\n\n${JSON.stringify(result.data, null, 2)}`
           );
         case "error":
-          return textResult(`Nie udało się pobrać ${labels.genitive} dla KRS ${krs} – API KRS zwróciło błąd. Spróbuj ponownie później.`);
+          return errorResult(`Nie udało się pobrać ${labels.genitive} dla KRS ${krs} – API KRS zwróciło błąd. Spróbuj ponownie później.`);
         case "not_found":
           return textResult(
             `Nie znaleziono ${labels.genitive} dla KRS ${krs} w rejestrze ${registers.join(" ani ")}.${labels.notFoundHint}`

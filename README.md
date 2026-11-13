@@ -10,6 +10,8 @@ This server is designed to be run with `npx`, allowing you to use it as a tool p
 
 ### Running with `npx`
 
+Requires Node.js 18 or newer (tested on 22 and 24 in CI).
+
 To start the server, run the following command:
 
 ```bash

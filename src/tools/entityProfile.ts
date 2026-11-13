@@ -3,10 +3,8 @@ import { KrsExtract } from "../types/krs.js";
 import { krsLookupInputSchema, Rejestr, registersToCheck } from "../schemas/krs.js";
 import { buildEntityProfile, ProfileReport } from "../analysis/profile.js";
 import { formatCompactJson } from "../utils/format.js";
+import { errorResult, textResult } from "./result.js";
 
-function textResult(text: string) {
-  return { content: [{ type: "text" as const, text }] };
-}
 
 function formatProfile(profile: ProfileReport): string {
   return (
@@ -31,7 +29,7 @@ export const getKrsEntityProfileTool = {
       case "ok":
         return textResult(formatProfile(buildEntityProfile(result.data, result.rejestr, krs)));
       case "error":
-        return textResult(`Nie udało się pobrać odpisu aktualnego dla KRS ${krs} – API KRS zwróciło błąd. Spróbuj ponownie później.`);
+        return errorResult(`Nie udało się pobrać odpisu aktualnego dla KRS ${krs} – API KRS zwróciło błąd. Spróbuj ponownie później.`);
       case "not_found":
         return textResult(
           `Nie znaleziono odpisu aktualnego dla KRS ${krs} w rejestrze ${registers.join(" ani ")}. ` +

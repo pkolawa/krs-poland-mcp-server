@@ -23,6 +23,13 @@ Serwer MCP udostępniający dane z publicznego API Krajowego Rejestru Sądowego 
   maks. 50 ostatnio używanych zapytań; błędy nie są zapamiętywane; równoległe zapytania o ten sam adres dzielą jedno.
   W testach cache czyści `src/test-setup.ts` przed każdym testem
 - Prompt MCP `weryfikacja-kontrahenta` (`src/prompts/counterpartyCheck.ts`): karta → status → historia 12 mies. → raport
+- CI (`.github/workflows/tests.yml`): lint, typecheck, testy i build na Node 22 i 24 + testy integracyjne;
+  `krs-api-integration.yml` codziennie. `engines` deklaruje Node ≥ 18 (zbudowany serwer sprawdzony na 18 i 20)
+- `overrides` w `package.json` wymuszają załatane `glob` (≥ 14.0.2) i `minimatch` (≥ 11.0.1) w narzędziach
+  deweloperskich (Jest, ESLint) – do usunięcia, gdy te pakiety same przejdą na nowe wersje. `deepmerge` (Jest)
+  nie ma poprawki – niska waga, łączy tylko lokalną konfigurację
+- TypeScript 6: `types: ["node", "jest"]` w `tsconfig.json` (domyślnie pusta lista); ts-jest kompiluje do
+  CommonJS z `moduleResolution: "Bundler"` (`Node`/node10 jest przestarzałe)
 - Build: esbuild do jednego pliku ESM (`build/index.mjs`); `@modelcontextprotocol/sdk` i `zod` (v4) są external –
   instalowane z `dependencies`, dzięki czemu serwer i SDK używają tej samej kopii zod
 
@@ -31,7 +38,7 @@ Serwer MCP udostępniający dane z publicznego API Krajowego Rejestru Sądowego 
 - `npm run build` — unit tests + esbuild bundle
 - `npm run test:unit` — testy unit (mockowany fetch)
 - `npm run test:integration` — testy z prawdziwym API KRS
-- `npm run lint` — ESLint
+- `npm run lint` — ESLint 10 (flat config `eslint.config.mjs`): `src/`, `scripts/`, `build.mjs`
 - `npm run typecheck` — TypeScript strict mode
 
 ## Wydawanie wersji
@@ -52,6 +59,8 @@ Wymagane logowania: `npm login` oraz `mcp-publisher login github` (token rejestr
 - Walidacja inputów przez Zod – wspólne schematy w `src/schemas/krs.ts`; rejestr jest opcjonalny we wszystkich
   narzędziach (bez niego sprawdzane są kolejno P i S)
 - Każde narzędzie ma `annotations: { readOnlyHint: true, openWorldHint: true }`
+- Wyniki narzędzi przez `textResult` / `errorResult` (`src/tools/result.ts`): `isError: true` tylko przy
+  niepowodzeniu (błąd API, niepoprawne wejście); „nie znaleziono” to zwykła odpowiedź
 - Odpowiedzi MCP zawierają `type: "text"` z JSON w treści
 - API KRS: `https://api-krs.ms.gov.pl/api/krs/{typ}/{krs}?rejestr={P|S}&format=json`
 - Odpis aktualny: nagłówek `naglowekA`, pola proste; ostatni wpis tylko jako `numer/data/sygnatura/sąd…OstatniegoWpisu`

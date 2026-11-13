@@ -7,7 +7,7 @@
   "scripts": {
     "build": "npm run test:unit && node build.mjs",
     "start": "node build/index.mjs",
-    "lint": "eslint \"src/**/*.ts\"",
+    "lint": "eslint \"src/**/*.ts\" \"scripts/**/*.mjs\" build.mjs eslint.config.mjs",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "jest --testPathIgnorePatterns=api.integration.test.ts",
     "test:integration": "jest --runTestsByPath src/utils/api.integration.test.ts",
@@ -50,16 +50,21 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.3.1",
-    "@typescript-eslint/eslint-plugin": "^8.71.1",
-    "@typescript-eslint/parser": "^8.71.1",
-    "esbuild": "^0.25.9",
-    "eslint": "^8.57.1",
-    "eslint-config-prettier": "^9.1.0",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.14.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.14.0",
     "jest": "^30.5.2",
     "prettier": "^3.6.2",
     "ts-jest": "^29.4.14",
-    "typescript": "^5.9.2"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.72.2"
+  },
+  "overrides": {
+    "glob": "^14.0.2",
+    "minimatch": "^11.0.8"
   }
 }

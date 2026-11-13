@@ -37,7 +37,7 @@ async function build() {
       await context.watch();
       console.log('Watching for changes...');
     } else {
-      const result = await esbuild.build(buildOptions);
+      await esbuild.build(buildOptions);
       postBuild();
       console.log('Build finished.');
     }
