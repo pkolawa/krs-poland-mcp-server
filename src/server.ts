@@ -2,6 +2,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { getKrsCurrentExtractTool } from "./tools/currentExtract.js";
 import { getKrsFullExtractTool } from "./tools/fullExtract.js";
 import { checkKrsStatusTool } from "./tools/checkStatus.js";
+import { checkKrsWatchlistTool, MAX_RANGE_DAYS, MAX_WATCHED_KRS } from "./tools/watchlist.js";
 
 export const server = new McpServer({
   name: "KRS Poland MCP Server",
@@ -39,4 +40,19 @@ server.registerTool("Check_KRS_Status",
         annotations: { readOnlyHint: true, openWorldHint: true }
     },
     (params) => checkKrsStatusTool.handler(params)
+);
+
+server.registerTool("Check_KRS_Watchlist",
+    {
+        title: "check-krs-watchlist",
+        description:
+            `Check which of the watched entities (up to ${MAX_WATCHED_KRS} KRS numbers) had an entry in the KRS register ` +
+            `on a given day (data) or within a date range (odDaty/doDaty, up to ${MAX_RANGE_DAYS} days), based on the ` +
+            "daily KRS bulletin. For each entity with an entry returns the bulletin days and, unless szczegoly is false, " +
+            "its name, last register entry (number, date, case reference, court) and the status assessment of " +
+            "Check_KRS_Status. Also lists entities without entries and bulletin days that could not be fetched.",
+        inputSchema: checkKrsWatchlistTool.schema,
+        annotations: { readOnlyHint: true, openWorldHint: true }
+    },
+    (params) => checkKrsWatchlistTool.handler(params)
 );

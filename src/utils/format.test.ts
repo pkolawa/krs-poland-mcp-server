@@ -1,4 +1,4 @@
-import { currentFieldValue, formatCompanyHeadline } from "./format.js";
+import { currentFieldValue, formatCompanyHeadline, getLastEntry } from "./format.js";
 import { KrsExtract } from "../types/krs.js";
 
 describe("formatCompanyHeadline – API KRS response shapes", () => {
@@ -157,5 +157,51 @@ describe("formatCompanyHeadline", () => {
     expect(formatCompanyHeadline(extract)).toBe(
       "Nieznana nazwa (KRS 0000444444)"
     );
+  });
+});
+
+describe("getLastEntry", () => {
+  it("reads the last entry fields of odpis aktualny", () => {
+    const extract: KrsExtract = {
+      odpis: {
+        naglowekA: {
+          numerOstatniegoWpisu: 51,
+          dataOstatniegoWpisu: "12.11.2026",
+          sygnaturaAktSprawyDotyczacejOstatniegoWpisu: "SZ.XIII NS-REJ.KRS/15995/26/185",
+          oznaczenieSaduDokonujacegoOstatniegoWpisu: "SĄD REJONOWY SZCZECIN-CENTRUM W SZCZECINIE",
+        },
+      },
+    };
+    expect(getLastEntry(extract)).toEqual({
+      numer: 51,
+      data: "12.11.2026",
+      sygnatura: "SZ.XIII NS-REJ.KRS/15995/26/185",
+      sad: "SĄD REJONOWY SZCZECIN-CENTRUM W SZCZECINIE",
+    });
+  });
+
+  it("picks the highest-numbered entry of odpis pełny, with its description", () => {
+    const extract: KrsExtract = {
+      odpis: {
+        naglowekP: {
+          wpis: [
+            { numerWpisu: 40, opis: "ZMIANA DANYCH W REJESTRZE", dataWpisu: "21.07.2026" },
+            { numerWpisu: 41, opis: "WYKREŚLENIE Z KRAJOWEGO REJESTRU SĄDOWEGO", dataWpisu: "16.10.2026", dataUprawomocnienia: "29.10.2026" },
+            { numerWpisu: 39, opis: "ZMIANA DANYCH W REJESTRZE", dataWpisu: "21.07.2026" },
+          ],
+        },
+      },
+    };
+    expect(getLastEntry(extract)).toEqual({
+      numer: 41,
+      data: "16.10.2026",
+      opis: "WYKREŚLENIE Z KRAJOWEGO REJESTRU SĄDOWEGO",
+      dataUprawomocnienia: "29.10.2026",
+    });
+  });
+
+  it("returns undefined when the header has no entry data", () => {
+    expect(getLastEntry({})).toBeUndefined();
+    expect(getLastEntry({ odpis: { naglowekA: { numerKRS: "0000019193" } } })).toBeUndefined();
   });
 });

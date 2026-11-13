@@ -52,8 +52,17 @@ describe("MCP Server", () => {
     expect(tool.annotations).toEqual({ readOnlyHint: true, openWorldHint: true });
   });
 
-  it("registers exactly 3 tools", () => {
-    expect(Object.keys(internals()._registeredTools)).toHaveLength(3);
+  it("registers Check_KRS_Watchlist tool as read-only", () => {
+    const tool = internals()._registeredTools["Check_KRS_Watchlist"];
+    expect(tool).toBeDefined();
+    expect(tool.title).toBe("check-krs-watchlist");
+    expect(tool.description).toContain("daily KRS bulletin");
+    expect(tool.annotations).toEqual({ readOnlyHint: true, openWorldHint: true });
+    expect(Object.keys(tool.inputSchema.shape).sort()).toEqual(["data", "doDaty", "krs", "odDaty", "szczegoly"]);
+  });
+
+  it("registers exactly 4 tools", () => {
+    expect(Object.keys(internals()._registeredTools)).toHaveLength(4);
   });
 
   it("has input schemas with krs and rejestr fields", () => {

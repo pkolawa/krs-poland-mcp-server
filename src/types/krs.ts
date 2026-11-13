@@ -26,6 +26,9 @@ export interface KrsNaglowek {
   dataRejestracjiWKRS?: string;
   numerOstatniegoWpisu?: number;
   dataOstatniegoWpisu?: string;
+  sygnaturaAktSprawyDotyczacejOstatniegoWpisu?: string;
+  oznaczenieSaduDokonujacegoOstatniegoWpisu?: string;
+  /** Tylko odpis pełny: wszystkie wpisy, od pierwszego. */
   wpis?: KrsWpis[];
   [key: string]: unknown;
 }

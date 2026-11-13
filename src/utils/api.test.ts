@@ -1,5 +1,14 @@
 
-import { buildExtractUrl, buildExtractUrlPath, buildExtractUrls, fetchKrs, makeKRSRequest } from "./api.js";
+import {
+  buildBulletinUrl,
+  buildExtractUrl,
+  buildExtractUrlPath,
+  buildExtractUrls,
+  fetchBulletin,
+  fetchKrs,
+  makeKRSRequest,
+  normalizeKrsNumber,
+} from "./api.js";
 import { KrsExtract } from "../types/krs.js";
 
 // Using a well-known, stable entity (GUS) for reliable testing.
@@ -290,6 +299,78 @@ describe('KRS API Utilities', () => {
 
       expect(result.status).toBe('ok');
       expect(fetchSpy).toHaveBeenCalledTimes(2);
+    });
+  });
+
+  describe('Biuletyn', () => {
+    afterEach(() => {
+      jest.useRealTimers();
+      jest.restoreAllMocks();
+    });
+
+    function respond(status: number, body?: unknown): Response {
+      return { ok: status >= 200 && status < 300, status, json: async () => body } as Response;
+    }
+
+    it('builds the bulletin URL for a day', () => {
+      expect(buildBulletinUrl('2026-11-12')).toBe('https://api-krs.ms.gov.pl/api/krs/Biuletyn/2026-11-12');
+    });
+
+    it.each([
+      ['116', '0000000116'],
+      [' 19193 ', '0000019193'],
+      ['0000019193', '0000019193'],
+      [19193, '0000019193'],
+    ])('normalizes %p to %p', (input, expected) => {
+      expect(normalizeKrsNumber(input)).toBe(expected);
+    });
+
+    it.each([[''], ['12a'], ['12345678901'], [null], [{}], [1.5], [-3]])('rejects %p', (input) => {
+      expect(normalizeKrsNumber(input)).toBeNull();
+    });
+
+    it('returns 10-digit numbers without duplicates or malformed items', async () => {
+      jest.spyOn(global, 'fetch').mockResolvedValue(respond(200, ['116', '19193', '116', '19193', '19193', 'x', null]));
+
+      const result = await fetchBulletin('2026-11-12');
+
+      expect(result).toEqual({ status: 'ok', data: ['0000000116', '0000019193'] });
+    });
+
+    it('treats an empty day as an empty list', async () => {
+      jest.spyOn(global, 'fetch').mockResolvedValue(respond(200, []));
+
+      expect(await fetchBulletin('2026-11-14')).toEqual({ status: 'ok', data: [] });
+    });
+
+    it('reports 404 as an error rather than an empty day', async () => {
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue(respond(404));
+
+      expect(await fetchBulletin('2026-11-12')).toEqual({ status: 'error', error: 'brak biuletynu (HTTP 404/204)' });
+      expect(fetchSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('reports a body that is not a list as an error', async () => {
+      jest.spyOn(global, 'fetch').mockResolvedValue(respond(200, { message: 'unexpected' }));
+
+      expect(await fetchBulletin('2026-11-12')).toEqual({
+        status: 'error',
+        error: 'nieoczekiwany format odpowiedzi biuletynu',
+      });
+    });
+
+    it('gives up on a failing day after short retries (2 s, 5 s)', async () => {
+      jest.useFakeTimers();
+      jest.spyOn(console, 'error').mockImplementation(() => undefined);
+      const fetchSpy = jest.spyOn(global, 'fetch').mockResolvedValue(respond(503));
+
+      const resultPromise = fetchBulletin('2026-11-12');
+      await jest.advanceTimersByTimeAsync(2_000);
+      await jest.advanceTimersByTimeAsync(5_000);
+      const result = await resultPromise;
+
+      expect(result).toEqual({ status: 'error', error: 'HTTP 503' });
+      expect(fetchSpy).toHaveBeenCalledTimes(3);
     });
   });
 });
