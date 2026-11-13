@@ -5,7 +5,7 @@ import { checkKrsStatusTool } from "./tools/checkStatus.js";
 
 export const server = new McpServer({
   name: "KRS Poland MCP Server",
-  version: "1.3.5",
+  version: "1.4.0",
 });
 
 server.registerTool("Get_Current_KRS_Record",
