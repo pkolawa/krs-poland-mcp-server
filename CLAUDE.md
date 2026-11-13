@@ -29,7 +29,8 @@ Serwer MCP udostępniający dane z publicznego API Krajowego Rejestru Sądowego 
    - `prepublishOnly`: preflight (sync wersji, blokada duplikatu na npm) → lint → typecheck
      → build → weryfikacja `build/index.mjs`
    - `postpublish`: `git push --follow-tags` + `mcp-publisher publish`
-3. Ręcznie zostaje tylko PR `dev` → `main`.
+3. Ręcznie zostaje jeden krok, który `postpublish` wypisuje na końcu: przy wydaniu z `main` (po merge'u PR `dev` → `main`)
+   przewinięcie `dev` do `main`; przy wydaniu z innej gałęzi – PR do `main`.
 
 Wymagane logowania: `npm login` oraz `mcp-publisher login github` (token rejestru wygasa).
 
