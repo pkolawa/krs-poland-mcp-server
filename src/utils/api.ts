@@ -48,9 +48,18 @@ function isRetryableStatus(status: number): boolean {
   return status >= 500 || status === 408 || status === 429;
 }
 
-async function fetchKrsSingle<T>(url: string, logFailure: boolean): Promise<KrsFetchResult<T>> {
+export interface FetchKrsOptions {
+  /** Pauses before successive retries; defaults to 30 s and 60 s. An empty list disables retries. */
+  retryDelaysMs?: readonly number[];
+}
+
+async function fetchKrsSingle<T>(
+  url: string,
+  logFailure: boolean,
+  retryDelaysMs: readonly number[]
+): Promise<KrsFetchResult<T>> {
   const headers = { Accept: "application/json", "User-Agent": USER_AGENT };
-  const maxAttempts = RETRY_DELAYS_MS.length + 1;
+  const maxAttempts = retryDelaysMs.length + 1;
   let lastError = "unknown error";
 
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
@@ -81,8 +90,7 @@ async function fetchKrsSingle<T>(url: string, logFailure: boolean): Promise<KrsF
       }
 
       console.error("KRS request error (will retry):", err);
-      const delay = RETRY_DELAYS_MS[attempt] ?? RETRY_DELAYS_MS[RETRY_DELAYS_MS.length - 1];
-      await sleep(delay);
+      await sleep(retryDelaysMs[attempt]);
     } finally {
       clearTimeout(timeoutId);
     }
@@ -96,13 +104,14 @@ async function fetchKrsSingle<T>(url: string, logFailure: boolean): Promise<KrsF
  * When none succeeds, reports `error` if any URL failed for a reason other than 404,
  * and `not_found` only when every URL answered 404.
  */
-export async function fetchKrs<T>(urlOrUrls: string | string[]): Promise<KrsFetchResult<T>> {
+export async function fetchKrs<T>(urlOrUrls: string | string[], options: FetchKrsOptions = {}): Promise<KrsFetchResult<T>> {
   const urls = Array.isArray(urlOrUrls) ? urlOrUrls : [urlOrUrls];
+  const retryDelaysMs = options.retryDelaysMs ?? RETRY_DELAYS_MS;
   let firstError: KrsFetchResult<T> | null = null;
 
   for (let index = 0; index < urls.length; index++) {
     const logFailure = index === urls.length - 1;
-    const result = await fetchKrsSingle<T>(urls[index], logFailure);
+    const result = await fetchKrsSingle<T>(urls[index], logFailure, retryDelaysMs);
     if (result.status === "ok") return result;
     if (result.status === "error" && !firstError) firstError = result;
   }
@@ -117,4 +126,47 @@ export function fetchKrsExtract<T>(opts: { type: ExtractType; rejestr: string; k
 export async function makeKRSRequest<T>(urlOrUrls: string | string[]): Promise<T | null> {
   const result = await fetchKrs<T>(urlOrUrls);
   return result.status === "ok" ? result.data : null;
+}
+
+// ---------------------------------------------------------------------------
+// Biuletyn – daily list of entities with an entry in the register
+// ---------------------------------------------------------------------------
+
+/**
+ * One bulletin call per day of a range adds up, so a failing day gives up after a few seconds
+ * instead of the 90 s used for single extracts – the caller reports it as a day not fetched.
+ */
+const BULLETIN_RETRY_DELAYS_MS = [2_000, 5_000];
+
+/** `${KRS_API_BASE}/Biuletyn/{YYYY-MM-DD}` */
+export function buildBulletinUrl(date: string): string {
+  return `${KRS_API_BASE}/Biuletyn/${date}`;
+}
+
+/** The bulletin lists KRS numbers without leading zeros ("116" → "0000000116"); anything else yields null. */
+export function normalizeKrsNumber(value: unknown): string | null {
+  const text = typeof value === "number" && Number.isInteger(value) ? String(value) : value;
+  if (typeof text !== "string" || !/^\d{1,10}$/.test(text.trim())) return null;
+  return text.trim().padStart(10, "0");
+}
+
+/**
+ * KRS numbers of entities that had an entry in the register on the given day (YYYY-MM-DD),
+ * normalized to 10 digits and without the duplicates the API returns (one item per change).
+ * A 404/204 is reported as an error, not as an empty day, so a moved endpoint cannot pass for "no changes".
+ */
+export async function fetchBulletin(
+  date: string
+): Promise<Exclude<KrsFetchResult<string[]>, { status: "not_found" }>> {
+  const result = await fetchKrs<unknown>(buildBulletinUrl(date), { retryDelaysMs: BULLETIN_RETRY_DELAYS_MS });
+  if (result.status === "error") return result;
+  if (result.status === "not_found") return { status: "error", error: "brak biuletynu (HTTP 404/204)" };
+  if (!Array.isArray(result.data)) return { status: "error", error: "nieoczekiwany format odpowiedzi biuletynu" };
+
+  const numbers = new Set<string>();
+  for (const item of result.data) {
+    const krs = normalizeKrsNumber(item);
+    if (krs) numbers.add(krs);
+  }
+  return { status: "ok", data: [...numbers] };
 }

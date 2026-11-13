@@ -1,5 +1,6 @@
-import { buildExtractUrls } from "./api.js";
+import { buildExtractUrls, fetchBulletin } from "./api.js";
 import { checkKrsStatusTool } from "../tools/checkStatus.js";
+import { checkWatchlist, todayInPoland } from "../tools/watchlist.js";
 import { getKrsEntryHistoryTool, EntryHistoryArgs } from "../tools/entryHistory.js";
 
 type UnknownRecord = Record<string, unknown>;
@@ -217,6 +218,65 @@ describe("Check_KRS_Status against the public API", () => {
 
     expect(output).toBe("Nie znaleziono podmiotu o numerze KRS 0999999999 w rejestrze P ani S.");
   }, 60_000);
+});
+
+describe("KRS bulletin (Biuletyn) against the public API", () => {
+  /** Weekdays before today (Polish calendar), newest first – a public holiday can leave one empty. */
+  function recentWeekdays(count: number): string[] {
+    const days: string[] = [];
+    const day = new Date(`${todayInPoland(new Date())}T00:00:00Z`);
+    while (days.length < count) {
+      day.setUTCDate(day.getUTCDate() - 1);
+      const weekday = day.getUTCDay();
+      if (weekday !== 0 && weekday !== 6) days.push(day.toISOString().slice(0, 10));
+    }
+    return days;
+  }
+
+  let sample: { day: string; numbers: string[] } | undefined;
+
+  async function recentBulletin(): Promise<{ day: string; numbers: string[] }> {
+    if (sample) return sample;
+    for (const day of recentWeekdays(5)) {
+      const result = await fetchBulletin(day);
+      if (result.status !== "ok") throw new Error(`Biuletyn ${day}: ${result.error}`);
+      if (result.data.length > 0) {
+        sample = { day, numbers: result.data };
+        return sample;
+      }
+    }
+    throw new Error("Biuletyn KRS był pusty przez ostatnie 5 dni roboczych");
+  }
+
+  it("returns a non-empty list of unique 10-digit numbers for a recent working day", async () => {
+    const { numbers } = await recentBulletin();
+
+    expect(numbers.length).toBeGreaterThan(0);
+    expect(new Set(numbers).size).toBe(numbers.length);
+    expect(numbers.every((krs) => /^\d{10}$/.test(krs))).toBe(true);
+  }, 60_000);
+
+  it("Check_KRS_Watchlist points out the watched entities listed in that day's bulletin", async () => {
+    const { day, numbers } = await recentBulletin();
+    const changed = numbers.slice(0, 2);
+    const unknown = "0999999999";
+
+    const result = await checkWatchlist({ krs: [...changed, unknown], data: day });
+    const text = result.content[0].text;
+    const report = JSON.parse(text.slice(text.indexOf("{"))) as {
+      zmiany: Array<{ krs: string; dni: string[]; ostatniWpis?: { numer: number | null }; blad?: string }>;
+      bezZmian: string[];
+    };
+
+    expect(text.split("\n")[0]).toBe(`Obserwowane podmioty w KRS – ${day}: wpisy u 2 z 3 podmiotów.`);
+    expect(report.zmiany.map((hit) => hit.krs)).toEqual(changed);
+    expect(report.bezZmian).toEqual([unknown]);
+    for (const hit of report.zmiany) {
+      expect(hit.dni).toEqual([day]);
+      expect(hit.blad).toBeUndefined();
+      expect(typeof hit.ostatniWpis?.numer).toBe("number");
+    }
+  }, 120_000);
 });
 
 describe("Get_KRS_Entry_History against the public API", () => {
