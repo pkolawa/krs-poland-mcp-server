@@ -1,6 +1,6 @@
-import { z } from "zod";
 import { makeKRSRequest, buildExtractUrls } from "../utils/api.js";
 import { KrsExtract } from "../types/krs.js";
+import { krsExtractInputSchema } from "../schemas/krs.js";
 import { formatCompanyHeadline } from "../utils/format.js";
 
 /**
@@ -8,19 +8,7 @@ import { formatCompanyHeadline } from "../utils/format.js";
  */
 export const getKrsFullExtractTool = {
   description: "Get current registry based on KRS number",
-  schema: {
-    krs: z
-      .string()
-      .regex(/^[0]\d{9}$/, "Numer KRS powinien mieć 10 cyfr")
-      .describe("Numer KRS (10 cyfr)"),
-    rejestr:
-      z
-        .string()
-        .length(1, "Rejestr musi być pojedynczym znakiem: P lub S")
-        .regex(/^[pPsS]$/, "Rejestr musi być literą P lub S (wielkość liter bez znaczenia)")
-        .transform((val) => val.toUpperCase() as "P" | "S")
-        .describe("Rejestr: P – przedsiębiorców, S – stowarzyszeń (P/S, wielkość liter bez znaczenia)"),
-  },
+  schema: krsExtractInputSchema,
   handler: async (args: { krs: string; rejestr: "P" | "S" }) => {
     const { krs, rejestr } = args;
     const urls = buildExtractUrls({ type: "OdpisPelny", rejestr, krs });

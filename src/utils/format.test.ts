@@ -1,5 +1,67 @@
-import { formatCompanyHeadline } from "./format.js";
+import { currentFieldValue, formatCompanyHeadline } from "./format.js";
 import { KrsExtract } from "../types/krs.js";
+
+describe("formatCompanyHeadline – API KRS response shapes", () => {
+  it("reads odpis aktualny (naglowekA + plain nazwa)", () => {
+    const extract: KrsExtract = {
+      odpis: {
+        rodzaj: "Aktualny",
+        naglowekA: { numerKRS: "0000019193", rejestr: "RejP" },
+        dane: { dzial1: { danePodmiotu: { nazwa: "POLSKIE KOLEJE PAŃSTWOWE SPÓŁKA AKCYJNA" } } },
+      },
+    };
+    expect(formatCompanyHeadline(extract)).toBe("POLSKIE KOLEJE PAŃSTWOWE SPÓŁKA AKCYJNA (KRS 0000019193)");
+  });
+
+  it("reads odpis pełny (naglowekP + versioned nazwa) and picks the version still in force", () => {
+    const extract: KrsExtract = {
+      odpis: {
+        rodzaj: "Pełny",
+        naglowekP: { numerKRS: "0000019193" },
+        dane: {
+          dzial1: {
+            danePodmiotu: {
+              nazwa: [
+                { nazwa: "PKP S.A. – STARA NAZWA", nrWpisuWprow: "1", nrWpisuWykr: "51" },
+                { nazwa: "POLSKIE KOLEJE PAŃSTWOWE SPÓŁKA AKCYJNA", nrWpisuWprow: "51" },
+              ],
+            },
+          },
+        },
+      },
+    };
+    expect(formatCompanyHeadline(extract)).toBe("POLSKIE KOLEJE PAŃSTWOWE SPÓŁKA AKCYJNA (KRS 0000019193)");
+  });
+
+  it("reads a foreign branch (danePodmiotuZagranicznego)", () => {
+    const extract: KrsExtract = {
+      odpis: {
+        naglowekA: { numerKRS: "0000016709" },
+        dane: { dzial1: { danePodmiotuZagranicznego: { nazwa: "SITA SP. Z O.O. ODDZIAŁ W POLSCE" } } },
+      },
+    };
+    expect(formatCompanyHeadline(extract)).toBe("SITA SP. Z O.O. ODDZIAŁ W POLSCE (KRS 0000016709)");
+  });
+});
+
+describe("currentFieldValue", () => {
+  it("returns plain strings as they are", () => {
+    expect(currentFieldValue("SPÓŁKA AKCYJNA", "formaPrawna")).toBe("SPÓŁKA AKCYJNA");
+  });
+
+  it("returns the newest version when every version was struck out (deleted entity)", () => {
+    const versions = [
+      { nazwa: "PIERWSZA", nrWpisuWprow: "1", nrWpisuWykr: "26" },
+      { nazwa: "DRUGA", nrWpisuWprow: "26", nrWpisuWykr: "41" },
+    ];
+    expect(currentFieldValue(versions, "nazwa")).toBe("DRUGA");
+  });
+
+  it("returns undefined for missing or empty values", () => {
+    expect(currentFieldValue(undefined, "nazwa")).toBeUndefined();
+    expect(currentFieldValue([], "nazwa")).toBeUndefined();
+  });
+});
 
 describe("formatCompanyHeadline", () => {
   it("extracts name and KRS from dzial1.danePodstawowe", () => {
@@ -33,13 +95,13 @@ describe("formatCompanyHeadline", () => {
       nazwa: "Stowarzyszenie Przykładowe",
     };
     expect(formatCompanyHeadline(extract)).toBe(
-      "Stowarzyszenie Przykładowe (KRS KRS ?)"
+      "Stowarzyszenie Przykładowe (KRS ?)"
     );
   });
 
   it("returns defaults when extract is empty", () => {
     const extract: KrsExtract = {};
-    expect(formatCompanyHeadline(extract)).toBe("Nieznana nazwa (KRS KRS ?)");
+    expect(formatCompanyHeadline(extract)).toBe("Nieznana nazwa (KRS ?)");
   });
 
   it("prefers dzial1.danePodstawowe over podstawoweDane", () => {
@@ -81,7 +143,7 @@ describe("formatCompanyHeadline", () => {
         },
       },
     };
-    expect(formatCompanyHeadline(extract)).toBe("Only Name (KRS KRS ?)");
+    expect(formatCompanyHeadline(extract)).toBe("Only Name (KRS ?)");
   });
 
   it("handles partial data — KRS present, name missing", () => {

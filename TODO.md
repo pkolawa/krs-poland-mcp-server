@@ -4,7 +4,7 @@
 > Fokus: jakość kodu
 
 ## Krytyczne
-- [ ] Wyekstrahować wspólny schemat Zod (KRS + rejestr) do `src/schemas/krs.ts` — duplikacja w `currentExtract.ts` i `fullExtract.ts`
+- [x] Wyekstrahować wspólny schemat Zod (KRS + rejestr) do `src/schemas/krs.ts` — duplikacja w `currentExtract.ts` i `fullExtract.ts`
 
 ## Ważne
 - [ ] Stworzyć generyczną fabrykę tool handlerów w `src/tools/` — `currentExtract.ts` i `fullExtract.ts` to prawie identyczne pliki, różnią się tylko typem odpisu i tekstem
