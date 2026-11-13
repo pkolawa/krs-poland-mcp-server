@@ -8,7 +8,7 @@ import { counterpartyCheckPrompt } from "./prompts/counterpartyCheck.js";
 
 export const server = new McpServer({
   name: "KRS Poland MCP Server",
-  version: "1.5.0",
+  version: "1.5.1",
 });
 
 server.registerTool("Get_Current_KRS_Record",
