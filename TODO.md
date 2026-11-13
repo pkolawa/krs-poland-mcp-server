@@ -18,7 +18,7 @@
 - [x] Rozważyć lepsze formatowanie odpowiedzi — wyciąganie kluczowych danych (nazwa, NIP, adres, zarząd) zamiast zwracania surowego JSON — `Get_KRS_Entity_Profile`
 
 ## Kolejne kroki (zweryfikowane 2026-11-13)
-- [ ] Migracja ESLint 8 → 9/10 (flat config) — ESLint 8 nie jest już wspierany; usunie też podatności w devDependencies
+- [x] Migracja ESLint 8 → 9/10 (flat config) — ESLint 8 nie jest już wspierany; usunie też podatności w devDependencies — ESLint 10 w 1.5.1
 - [ ] `Check_KRS_Status`: sygnał dla `statusNip: "UCHYLONY"` (API podaje status i datę decyzji; dziś widać go tylko w karcie podmiotu)
 - [ ] Zasoby MCP (resources) z odpisami, np. `krs://P/0000019193/aktualny`
 - [ ] Porównanie kilku podmiotów (karta/status obok siebie)

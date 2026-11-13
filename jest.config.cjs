@@ -15,7 +15,8 @@ module.exports = {
       {
         tsconfig: {
           module: "CommonJS",
-          moduleResolution: "Node",
+          // node10 resolution ("Node") is deprecated since TypeScript 6.
+          moduleResolution: "Bundler",
         },
       },
     ],
