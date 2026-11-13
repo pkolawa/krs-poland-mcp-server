@@ -5,11 +5,15 @@ Serwer MCP udostępniający dane z publicznego API Krajowego Rejestru Sądowego 
 ## Architektura
 
 - TypeScript + `@modelcontextprotocol/sdk`, transport stdio
-- Trzy narzędzia MCP: odpis aktualny (`Get_Current_KRS_Record`), pełny (`Get_Full_KRS_Record`)
-  i kontrola statusu z sygnałami ostrzegawczymi (`Check_KRS_Status`)
+- Cztery narzędzia MCP: odpis aktualny (`Get_Current_KRS_Record`), pełny (`Get_Full_KRS_Record`),
+  kontrola statusu z sygnałami ostrzegawczymi (`Check_KRS_Status`) i historia wpisów (`Get_KRS_Entry_History`)
 - HTTP client: retry (30s/60s backoff) tylko dla 5xx/408/429/błędów sieci; 404 i 204 → `not_found` bez ponawiania.
   Kolejność URL: query params (działa), potem path params (obecnie zawsze 404 – zapas na zmianę routingu)
 - Odpis aktualny podmiotu wykreślonego zwraca 204 – wtedy jedynym źródłem jest odpis pełny (wpis „WYKREŚLENIE…”)
+- Historii wpisów API nie wystawia – liczy ją `src/analysis/history.ts` z odpisu pełnego: wersja pola należy
+  do wpisu z `nrWpisuWprow` (wprowadzenie) i `nrWpisuWykr` (wykreślenie). Pola elementu listy (członek zarządu,
+  kod PKD, oddział) są składane w jedną zmianę; wersje wprowadzone i wykreślone tym samym wpisem są pomijane
+  (zmiana netto zero). Odpowiedź ma budżet wartości (~4 tys. znaków), reszta trafia do liczników `pominieto`
 - Build: esbuild do jednego pliku ESM (`build/index.mjs`); `@modelcontextprotocol/sdk` i `zod` (v4) są external –
   instalowane z `dependencies`, dzięki czemu serwer i SDK używają tej samej kopii zod
 
@@ -51,10 +55,11 @@ src/index.ts        — entrypoint
 src/server.ts       — rejestracja narzędzi
 src/tools/          — handlery narzędzi MCP
 src/schemas/krs.ts  — wspólne schematy Zod (numer KRS, rejestr)
-src/analysis/       — analiza odpisu (status.ts: sygnały z działów 2–6, wykreślenie)
+src/analysis/       — analiza odpisu (status.ts: sygnały z działów 2–6, wykreślenie;
+                      history.ts: lista wpisów i zmiany wprowadzone przez wpis)
 src/types/krs.ts    — interfejsy odpowiedzi API KRS
 src/utils/api.ts    — HTTP client (fetchKrs → ok / not_found / error)
-src/utils/format.ts — nagłówek oraz odczyt nazwy/numeru z odpisu aktualnego i pełnego
+src/utils/format.ts — nagłówek, odczyt nazwy/numeru z odpisu aktualnego i pełnego, zwarty JSON (formatCompactJson)
 ```
 
 @TODO.md

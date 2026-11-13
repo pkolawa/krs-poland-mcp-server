@@ -44,6 +44,7 @@ The server provides the following tools (checklist):
 - [x] **Get Current KRS Record** (`get-krs-current-extract`): Retrieves the current status and information for a given entity from the KRS.
 - [x] **Get Full KRS Record** (`get-krs-full-extract`): Retrieves the complete historical data for a given entity from the KRS.
 - [x] **Check KRS Status** (`check-krs-status`): Checks whether an entity is active and returns a compact report of risk signals found in its register entry — liquidation, bankruptcy, restructuring, suspension, dissolution, arrears with enforcement, asset security, dismissed bankruptcy petitions, court-appointed curator, missing board, overdue annual financial statements, and deletion from the register. The register (`P`/`S`) is optional; both are checked when it is omitted.
+- [x] **Get KRS Entry History** (`get-krs-entry-history`): Returns a compact history of the entity's register entries, computed from the full extract (which for large companies runs to hundreds of thousands of characters). By default it lists entries newest first — date, description, case reference and the fields each entry changed — optionally filtered with `odDaty` (`dd.mm.yyyy` or `yyyy-mm-dd`) and `limit` (default 20, max 100). With `numerWpisu` it shows what that single entry introduced, struck out and changed: name, address, capital, board members, PKD codes and so on. Works for entities struck off the register as well; the register (`P`/`S`) is optional.
 
 ## Development
 

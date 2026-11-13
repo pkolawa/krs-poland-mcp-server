@@ -48,3 +48,30 @@ export function formatCompanyHeadline(extract: KrsExtract): string {
   const name = getEntityName(extract) ?? "Nieznana nazwa";
   return `${name} (KRS ${krs})`;
 }
+
+const INLINE_JSON_MAX_WIDTH = 160;
+
+/**
+ * JSON z wcięciami jak `JSON.stringify(value, null, 2)`, ale obiekty i tablice z samymi wartościami prostymi
+ * (adres, kod PKD, lista ścieżek) trafiają do jednej linii, o ile się mieszczą. Wynik pozostaje poprawnym JSON-em,
+ * a odpowiedź jest kilka razy krótsza niż przy pełnym formatowaniu.
+ */
+export function formatCompactJson(value: unknown, indent = ""): string {
+  if (value === null || typeof value !== "object") return JSON.stringify(value) ?? "null";
+
+  const isArray = Array.isArray(value);
+  const entries: Array<[string | null, unknown]> = isArray
+    ? value.map((item): [null, unknown] => [null, item === undefined ? null : item])
+    : Object.entries(value).filter(([, item]) => item !== undefined);
+  const [open, close] = isArray ? ["[", "]"] : ["{", "}"];
+  if (!entries.length) return `${open}${close}`;
+
+  const childIndent = `${indent}  `;
+  const parts = entries.map(([key, item]) => (key === null ? "" : `${JSON.stringify(key)}: `) + formatCompactJson(item, childIndent));
+  const isFlat = entries.every(([, item]) => item === null || typeof item !== "object");
+  if (isFlat) {
+    const line = isArray ? `[${parts.join(", ")}]` : `{ ${parts.join(", ")} }`;
+    if (indent.length + line.length <= INLINE_JSON_MAX_WIDTH) return line;
+  }
+  return `${open}\n${parts.map((part) => childIndent + part).join(",\n")}\n${indent}${close}`;
+}
