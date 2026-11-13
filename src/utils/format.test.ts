@@ -1,4 +1,4 @@
-import { currentFieldValue, formatCompanyHeadline } from "./format.js";
+import { currentFieldValue, formatCompactJson, formatCompanyHeadline } from "./format.js";
 import { KrsExtract } from "../types/krs.js";
 
 describe("formatCompanyHeadline – API KRS response shapes", () => {
@@ -157,5 +157,52 @@ describe("formatCompanyHeadline", () => {
     expect(formatCompanyHeadline(extract)).toBe(
       "Nieznana nazwa (KRS 0000444444)"
     );
+  });
+});
+
+describe("formatCompactJson", () => {
+  const sample = {
+    pole: "dzial1.siedzibaIAdres.adres",
+    wprowadzono: [{ ulica: "HOŻA", nrDomu: "63/67", miejscowosc: "WARSZAWA", kraj: "POLSKA" }],
+    zmienionePola: ["dzial1.danePodmiotu.nazwa", "dzial2.reprezentacja.sklad"],
+    puste: [],
+    brak: undefined,
+    liczba: 3,
+    flaga: false,
+    nic: null,
+  };
+
+  it("produces valid JSON equal to the input (without undefined fields)", () => {
+    expect(JSON.parse(formatCompactJson(sample))).toEqual(JSON.parse(JSON.stringify(sample)));
+  });
+
+  it("keeps nested structure indented and puts flat objects and arrays on one line", () => {
+    expect(formatCompactJson(sample)).toBe(
+      [
+        "{",
+        '  "pole": "dzial1.siedzibaIAdres.adres",',
+        '  "wprowadzono": [',
+        '    { "ulica": "HOŻA", "nrDomu": "63/67", "miejscowosc": "WARSZAWA", "kraj": "POLSKA" }',
+        "  ],",
+        '  "zmienionePola": ["dzial1.danePodmiotu.nazwa", "dzial2.reprezentacja.sklad"],',
+        '  "puste": [],',
+        '  "liczba": 3,',
+        '  "flaga": false,',
+        '  "nic": null',
+        "}",
+      ].join("\n")
+    );
+  });
+
+  it("breaks a flat object that would not fit on one line", () => {
+    const long = { opis: "X".repeat(200), kod: "49.10.Z" };
+    expect(formatCompactJson(long)).toBe(`{\n  "opis": "${"X".repeat(200)}",\n  "kod": "49.10.Z"\n}`);
+  });
+
+  it("formats primitives and empty containers like JSON.stringify", () => {
+    expect(formatCompactJson("tekst")).toBe('"tekst"');
+    expect(formatCompactJson(12)).toBe("12");
+    expect(formatCompactJson({})).toBe("{}");
+    expect(formatCompactJson([undefined])).toBe("[null]");
   });
 });

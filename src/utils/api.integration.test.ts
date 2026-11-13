@@ -1,5 +1,6 @@
 import { buildExtractUrls } from "./api.js";
 import { checkKrsStatusTool } from "../tools/checkStatus.js";
+import { getKrsEntryHistoryTool, EntryHistoryArgs } from "../tools/entryHistory.js";
 
 type UnknownRecord = Record<string, unknown>;
 
@@ -215,5 +216,52 @@ describe("Check_KRS_Status against the public API", () => {
     const output = await status("0999999999");
 
     expect(output).toBe("Nie znaleziono podmiotu o numerze KRS 0999999999 w rejestrze P ani S.");
+  }, 60_000);
+});
+
+describe("Get_KRS_Entry_History against the public API", () => {
+  const PKP = "0000019193";
+
+  async function history(args: EntryHistoryArgs): Promise<string> {
+    const result = await getKrsEntryHistoryTool.handler(args);
+    return result.content[0].text;
+  }
+
+  function json(output: string): UnknownRecord {
+    return JSON.parse(output.slice(output.indexOf("{"))) as UnknownRecord;
+  }
+
+  it("lists PKP entries newest first in a few thousand characters instead of the whole extract", async () => {
+    const output = await history({ krs: PKP, limit: 10 });
+    const list = json(output);
+    const numbers = (list.wpisy as Array<{ numerWpisu: number }>).map((entry) => entry.numerWpisu);
+
+    expect(list).toMatchObject({ krs: PKP, rejestr: "P", pierwszyWpis: { numerWpisu: 1, dataWpisu: "11.06.2001" } });
+    expect(list.liczbaWpisow as number).toBeGreaterThanOrEqual(216);
+    expect(numbers).toHaveLength(10);
+    expect(numbers[0]).toBe((list.ostatniWpis as { numerWpisu: number }).numerWpisu);
+    expect([...numbers].sort((a, b) => b - a)).toEqual(numbers);
+    expect(output.length).toBeLessThan(10_000);
+  }, 60_000);
+
+  it("shows what a single PKP entry changed in the management board", async () => {
+    const output = await history({ krs: PKP, rejestr: "P", numerWpisu: 189 });
+    const changes = json(output).zmiany as Array<{ pole: string; zmieniono?: unknown[] }>;
+
+    expect(output.split("\n")[0]).toBe("Wpis nr 189 z 08.01.2025 – ZMIANA DANYCH W REJESTRZE");
+    expect(changes.find((change) => change.pole === "dzial2.reprezentacja.sklad")?.zmieniono).toEqual([
+      expect.objectContaining({
+        przed: { funkcjaWOrganie: "CZŁONEK ZARZĄDU" },
+        po: { funkcjaWOrganie: "WICEPREZES ZARZĄDU" },
+      }),
+    ]);
+  }, 60_000);
+
+  it("reads the history of an entity struck off the register", async () => {
+    const output = await history({ krs: "0000005433", limit: 1 }); // spółka jawna wykreślona 16.10.2026
+
+    expect(json(output).wpisy).toEqual([
+      expect.objectContaining({ dataWpisu: "16.10.2026", opis: "WYKREŚLENIE Z KRAJOWEGO REJESTRU SĄDOWEGO" }),
+    ]);
   }, 60_000);
 });
