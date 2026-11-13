@@ -123,6 +123,30 @@ export function fetchKrsExtract<T>(opts: { type: ExtractType; rejestr: string; k
   return fetchKrs<T>(buildExtractUrls(opts));
 }
 
+export type KrsRegisterFetchResult<T, R extends string = string> =
+  | { status: "ok"; rejestr: R; data: T }
+  | { status: "not_found" }
+  | { status: "error" };
+
+/**
+ * Fetches the extract from the first register (in the given order) that has the entity.
+ * Reports `error` when no register returned it and at least one failed, because then a missing
+ * entity cannot be told apart from an API outage; `not_found` only when every register said so.
+ */
+export async function fetchKrsExtractFromRegisters<T, R extends string>(
+  type: ExtractType,
+  krs: string,
+  registers: readonly R[]
+): Promise<KrsRegisterFetchResult<T, R>> {
+  let apiFailed = false;
+  for (const rejestr of registers) {
+    const result = await fetchKrsExtract<T>({ type, rejestr, krs });
+    if (result.status === "ok") return { status: "ok", rejestr, data: result.data };
+    if (result.status === "error") apiFailed = true;
+  }
+  return apiFailed ? { status: "error" } : { status: "not_found" };
+}
+
 export async function makeKRSRequest<T>(urlOrUrls: string | string[]): Promise<T | null> {
   const result = await fetchKrs<T>(urlOrUrls);
   return result.status === "ok" ? result.data : null;

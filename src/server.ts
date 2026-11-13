@@ -1,6 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { getKrsCurrentExtractTool } from "./tools/currentExtract.js";
-import { getKrsFullExtractTool } from "./tools/fullExtract.js";
+import { getKrsCurrentExtractTool, getKrsFullExtractTool } from "./tools/extract.js";
 import { checkKrsStatusTool } from "./tools/checkStatus.js";
 import { checkKrsWatchlistTool, MAX_RANGE_DAYS, MAX_WATCHED_KRS } from "./tools/watchlist.js";
 import { getKrsEntryHistoryTool } from "./tools/entryHistory.js";
@@ -13,8 +12,13 @@ export const server = new McpServer({
 server.registerTool("Get_Current_KRS_Record",
     {
         title: "get-krs-current-extract",
-        description: "Get current status of the entity in KRS",
-        inputSchema: getKrsCurrentExtractTool.schema
+        description:
+            "Get the raw current extract (odpis aktualny) of an entity from KRS as JSON – all register sections " +
+            "as they stand today (tens of thousands of characters for a large company; prefer Check_KRS_Status " +
+            "for a compact answer). Entities struck off the register have no current extract. " +
+            "The register (P/S) is optional – both are checked when omitted.",
+        inputSchema: getKrsCurrentExtractTool.schema,
+        annotations: { readOnlyHint: true, openWorldHint: true }
     },
     (params) => getKrsCurrentExtractTool.handler(params)
 );
@@ -22,8 +26,13 @@ server.registerTool("Get_Current_KRS_Record",
 server.registerTool("Get_Full_KRS_Record",
     {
         title: "get-krs-full-extract",
-        description: "Get full status of the entity in KRS",
-        inputSchema: getKrsFullExtractTool.schema
+        description:
+            "Get the raw full extract (odpis pełny) of an entity from KRS as JSON – current data plus the complete " +
+            "history of register entries (hundreds of thousands of characters for a large company; prefer " +
+            "Get_KRS_Entry_History for the history). Available also for entities struck off the register. " +
+            "The register (P/S) is optional – both are checked when omitted.",
+        inputSchema: getKrsFullExtractTool.schema,
+        annotations: { readOnlyHint: true, openWorldHint: true }
     },
     (params) => getKrsFullExtractTool.handler(params)
 );

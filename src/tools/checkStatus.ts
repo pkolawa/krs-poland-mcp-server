@@ -1,6 +1,6 @@
-import { fetchKrsExtract } from "../utils/api.js";
+import { fetchKrsExtractFromRegisters } from "../utils/api.js";
 import { KrsExtract } from "../types/krs.js";
-import { krsNumberSchema, Rejestr, rejestrSchema } from "../schemas/krs.js";
+import { krsLookupInputSchema, Rejestr, registersToCheck } from "../schemas/krs.js";
 import { analyzeCurrentExtract, analyzeEntityWithoutCurrentExtract, StatusReport } from "../analysis/status.js";
 
 function textResult(text: string) {
@@ -30,32 +30,19 @@ export type EntityStatusLookup =
  * żeby wykryć wykreślenie z rejestru.
  */
 export async function lookupEntityStatus(krs: string, registers: Rejestr[]): Promise<EntityStatusLookup> {
-  let apiFailed = false;
-  for (const reg of registers) {
-    const result = await fetchKrsExtract<KrsExtract>({ type: "OdpisAktualny", rejestr: reg, krs });
-    if (result.status === "ok") {
-      return { status: "current", rejestr: reg, extract: result.data, report: analyzeCurrentExtract(result.data, reg, krs) };
-    }
-    if (result.status === "error") apiFailed = true;
+  const current = await fetchKrsExtractFromRegisters<KrsExtract, Rejestr>("OdpisAktualny", krs, registers);
+  if (current.status === "ok") {
+    const { rejestr, data } = current;
+    return { status: "current", rejestr, extract: data, report: analyzeCurrentExtract(data, rejestr, krs) };
   }
+  if (current.status === "error") return { status: "error", stage: "OdpisAktualny" };
 
-  // Without a definite "not found" we cannot tell a missing entity from an API outage.
-  if (apiFailed) return { status: "error", stage: "OdpisAktualny" };
-
-  for (const reg of registers) {
-    const result = await fetchKrsExtract<KrsExtract>({ type: "OdpisPelny", rejestr: reg, krs });
-    if (result.status === "ok") {
-      return {
-        status: "without_current",
-        rejestr: reg,
-        extract: result.data,
-        report: analyzeEntityWithoutCurrentExtract(result.data, reg, krs),
-      };
-    }
-    if (result.status === "error") apiFailed = true;
+  const full = await fetchKrsExtractFromRegisters<KrsExtract, Rejestr>("OdpisPelny", krs, registers);
+  if (full.status === "ok") {
+    const { rejestr, data } = full;
+    return { status: "without_current", rejestr, extract: data, report: analyzeEntityWithoutCurrentExtract(data, rejestr, krs) };
   }
-
-  return apiFailed ? { status: "error", stage: "OdpisPelny" } : { status: "not_found" };
+  return full.status === "error" ? { status: "error", stage: "OdpisPelny" } : { status: "not_found" };
 }
 
 /**
@@ -63,15 +50,10 @@ export async function lookupEntityStatus(krs: string, registers: Rejestr[]): Pro
  * Bez podanego rejestru sprawdza kolejno P i S.
  */
 export const checkKrsStatusTool = {
-  schema: {
-    krs: krsNumberSchema,
-    rejestr: rejestrSchema
-      .optional()
-      .describe("Rejestr: P – przedsiębiorców, S – stowarzyszeń. Pomiń, aby sprawdzić oba rejestry."),
-  },
+  schema: krsLookupInputSchema,
   handler: async (args: { krs: string; rejestr?: Rejestr }) => {
     const { krs, rejestr } = args;
-    const registers: Rejestr[] = rejestr ? [rejestr] : ["P", "S"];
+    const registers = registersToCheck(rejestr);
     const lookup = await lookupEntityStatus(krs, registers);
 
     switch (lookup.status) {

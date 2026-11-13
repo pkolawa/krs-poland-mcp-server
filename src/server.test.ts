@@ -30,18 +30,20 @@ describe("MCP Server", () => {
     expect(info.version).toBe(pkg.version);
   });
 
-  it("registers Get_Current_KRS_Record tool", () => {
+  it("registers Get_Current_KRS_Record tool as read-only", () => {
     const tool = internals()._registeredTools["Get_Current_KRS_Record"];
     expect(tool).toBeDefined();
-    expect(tool.description).toBe("Get current status of the entity in KRS");
+    expect(tool.description).toContain("current extract (odpis aktualny)");
     expect(tool.title).toBe("get-krs-current-extract");
+    expect(tool.annotations).toEqual({ readOnlyHint: true, openWorldHint: true });
   });
 
-  it("registers Get_Full_KRS_Record tool", () => {
+  it("registers Get_Full_KRS_Record tool as read-only", () => {
     const tool = internals()._registeredTools["Get_Full_KRS_Record"];
     expect(tool).toBeDefined();
-    expect(tool.description).toBe("Get full status of the entity in KRS");
+    expect(tool.description).toContain("full extract (odpis pełny)");
     expect(tool.title).toBe("get-krs-full-extract");
+    expect(tool.annotations).toEqual({ readOnlyHint: true, openWorldHint: true });
   });
 
   it("registers Check_KRS_Status tool as read-only", () => {
@@ -84,13 +86,18 @@ describe("MCP Server", () => {
     }
   });
 
-  it("requires rejestr for extracts but not for the status check or the entry history", () => {
+  it("makes rejestr optional everywhere – P and S are checked in turn when it is omitted", () => {
     const tools = internals()._registeredTools;
     const rejestr = (name: string) => tools[name].inputSchema.shape.rejestr as { isOptional(): boolean };
 
-    expect(rejestr("Get_Current_KRS_Record").isOptional()).toBe(false);
-    expect(rejestr("Get_Full_KRS_Record").isOptional()).toBe(false);
-    expect(rejestr("Check_KRS_Status").isOptional()).toBe(true);
-    expect(rejestr("Get_KRS_Entry_History").isOptional()).toBe(true);
+    for (const name of ["Get_Current_KRS_Record", "Get_Full_KRS_Record", "Check_KRS_Status", "Get_KRS_Entry_History"]) {
+      expect(rejestr(name).isOptional()).toBe(true);
+    }
+  });
+
+  it("marks every tool as read-only", () => {
+    for (const [name, tool] of Object.entries(internals()._registeredTools)) {
+      expect({ name, annotations: tool.annotations }).toEqual({ name, annotations: { readOnlyHint: true, openWorldHint: true } });
+    }
   });
 });

@@ -45,7 +45,9 @@ Wymagane logowania: `npm login` oraz `mcp-publisher login github` (token rejestr
 
 ## Konwencje
 
-- Walidacja inputów przez Zod – wspólne schematy w `src/schemas/krs.ts`
+- Walidacja inputów przez Zod – wspólne schematy w `src/schemas/krs.ts`; rejestr jest opcjonalny we wszystkich
+  narzędziach (bez niego sprawdzane są kolejno P i S)
+- Każde narzędzie ma `annotations: { readOnlyHint: true, openWorldHint: true }`
 - Odpowiedzi MCP zawierają `type: "text"` z JSON w treści
 - API KRS: `https://api-krs.ms.gov.pl/api/krs/{typ}/{krs}?rejestr={P|S}&format=json`
 - Odpis aktualny: nagłówek `naglowekA`, pola proste; ostatni wpis tylko jako `numer/data/sygnatura/sąd…OstatniegoWpisu`
@@ -59,13 +61,14 @@ Wymagane logowania: `npm login` oraz `mcp-publisher login github` (token rejestr
 ```
 src/index.ts        — entrypoint
 src/server.ts       — rejestracja narzędzi
-src/tools/          — handlery narzędzi MCP (checkStatus.ts eksportuje też lookupEntityStatus,
+src/tools/          — handlery narzędzi MCP (extract.ts: fabryka narzędzi odpisu aktualnego/pełnego;
+                      checkStatus.ts eksportuje też lookupEntityStatus,
                       używany przez watchlist.ts)
-src/schemas/krs.ts  — wspólne schematy Zod (numer KRS, rejestr)
+src/schemas/krs.ts  — wspólne schematy Zod (numer KRS, opcjonalny rejestr) i registersToCheck (P, potem S)
 src/analysis/       — analiza odpisu (status.ts: sygnały z działów 2–6, wykreślenie;
                       history.ts: lista wpisów i zmiany wprowadzone przez wpis)
 src/types/krs.ts    — interfejsy odpowiedzi API KRS
-src/utils/api.ts    — HTTP client (fetchKrs → ok / not_found / error), fetchBulletin
+src/utils/api.ts    — HTTP client (fetchKrs → ok / not_found / error), fetchKrsExtractFromRegisters, fetchBulletin
 src/utils/format.ts — nagłówek, odczyt nazwy/numeru/ostatniego wpisu z odpisu aktualnego i pełnego,
                       zwarty JSON (formatCompactJson)
 src/utils/concurrency.ts — mapWithConcurrency (mała współbieżność zapytań do API)
