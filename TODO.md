@@ -15,4 +15,4 @@
 
 ## Drobne usprawnienia
 - [x] Dodać test rejestracji narzędzi MCP w `src/server.ts`
-- [ ] Rozważyć lepsze formatowanie odpowiedzi — wyciąganie kluczowych danych (nazwa, NIP, adres, zarząd) zamiast zwracania surowego JSON
+- [x] Rozważyć lepsze formatowanie odpowiedzi — wyciąganie kluczowych danych (nazwa, NIP, adres, zarząd) zamiast zwracania surowego JSON — `Get_KRS_Entity_Profile`

@@ -1,6 +1,10 @@
 import { Rejestr } from "../schemas/krs.js";
 import { KrsDzial2, KrsDzial3, KrsDzialOgolny, KrsExtract, KrsOkresSprawozdania } from "../types/krs.js";
 import { currentFieldValue, getDanePodmiotu, getEntityName, getNaglowek } from "../utils/format.js";
+import { asItems, hasContent, isRecord, str, truncate } from "./values.js";
+
+// Re-exported for existing callers and tests.
+export { hasContent };
 
 /**
  * Ocena statusu podmiotu na podstawie samego odpisu KRS:
@@ -74,38 +78,6 @@ const KEY_RESTRUKTURYZACJA = "postepowanieRestrukturyzacyjneNaprawczePrzymusowaR
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-/** API zwraca puste obiekty/tablice dla pól bez wpisu – traktujemy je jak brak wartości. */
-export function hasContent(value: unknown): boolean {
-  if (value === null || value === undefined) return false;
-  if (typeof value === "string") return value.trim().length > 0;
-  if (Array.isArray(value)) return value.some(hasContent);
-  if (isRecord(value)) return Object.values(value).some(hasContent);
-  return true;
-}
-
-function asItems(value: unknown): Record<string, unknown>[] {
-  if (Array.isArray(value)) return value.filter(isRecord);
-  return isRecord(value) ? [value] : [];
-}
-
-function str(value: unknown): string | undefined {
-  return typeof value === "string" && value.trim() ? value.trim() : undefined;
-}
-
-/** KRS texts often end with stray separators ("…LIKWIDACJI.,"); drop them so sentences end cleanly. */
-function trimTrailingPunctuation(text: string): string {
-  return text.replace(/[\s,.;:-]+$/, "");
-}
-
-function truncate(text: string, max = 300): string {
-  const clean = trimTrailingPunctuation(text);
-  return clean.length > max ? `${clean.slice(0, max - 1).trimEnd()}…` : clean;
-}
 
 function capitalize(text: string): string {
   const lower = text.toLowerCase();

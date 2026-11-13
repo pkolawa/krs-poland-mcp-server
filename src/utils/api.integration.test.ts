@@ -325,3 +325,16 @@ describe("Get_KRS_Entry_History against the public API", () => {
     ]);
   }, 60_000);
 });
+
+describe("Get_KRS_Entity_Profile against the public API", () => {
+  it("builds a compact PKP profile with identifiers, representation and no personal data", async () => {
+    const { getKrsEntityProfileTool } = await import("../tools/entityProfile.js");
+    const output = (await getKrsEntityProfileTool.handler({ krs: "0000019193" })).content[0].text;
+    const profile = JSON.parse(output.slice(output.indexOf("{"))) as UnknownRecord;
+
+    expect(profile).toMatchObject({ krs: "0000019193", rejestr: "P", identyfikatory: { nip: "5250000251" } });
+    expect(asRecord(profile.reprezentacja)?.organ).toBe("ZARZĄD SPÓŁKI");
+    expect(output).not.toMatch(/pesel|dataUrodzenia|[A-ZĄĆĘŁŃÓŚŹŻ0-9]\*{2,}/i);
+    expect(output.length).toBeLessThan(10_000);
+  }, 60_000);
+});

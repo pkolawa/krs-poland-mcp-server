@@ -3,6 +3,7 @@ import { getKrsCurrentExtractTool, getKrsFullExtractTool } from "./tools/extract
 import { checkKrsStatusTool } from "./tools/checkStatus.js";
 import { checkKrsWatchlistTool, MAX_RANGE_DAYS, MAX_WATCHED_KRS } from "./tools/watchlist.js";
 import { getKrsEntryHistoryTool } from "./tools/entryHistory.js";
+import { getKrsEntityProfileTool } from "./tools/entityProfile.js";
 
 export const server = new McpServer({
   name: "KRS Poland MCP Server",
@@ -81,4 +82,20 @@ server.registerTool("Get_KRS_Entry_History",
         annotations: { readOnlyHint: true, openWorldHint: true }
     },
     (params) => getKrsEntryHistoryTool.handler(params)
+);
+
+server.registerTool("Get_KRS_Entity_Profile",
+    {
+        title: "get-krs-entity-profile",
+        description:
+            "Get a compact profile of an entity from its current KRS extract: NIP/REGON (with NIP status), seat and " +
+            "address, contact and e-delivery address, share capital, representation (who can act for the entity and how: " +
+            "the board's composition by function and the representation rule, commercial proxies, attorneys; liquidators " +
+            "or a trustee when applicable), supervisory board, owners (shareholders that are companies are named, people " +
+            "are not), PKD activity codes, purpose and public-benefit status for associations, branches, and a one-line " +
+            "status assessment. Personal data is never returned. The register (P/S) is optional – both are checked when omitted.",
+        inputSchema: getKrsEntityProfileTool.schema,
+        annotations: { readOnlyHint: true, openWorldHint: true }
+    },
+    (params) => getKrsEntityProfileTool.handler(params)
 );

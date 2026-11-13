@@ -72,14 +72,21 @@ describe("MCP Server", () => {
     expect(Object.keys(tool.inputSchema.shape)).toEqual(["krs", "rejestr", "odDaty", "numerWpisu", "limit"]);
   });
 
-  it("registers exactly 5 tools", () => {
-    expect(Object.keys(internals()._registeredTools)).toHaveLength(5);
+  it("registers Get_KRS_Entity_Profile tool", () => {
+    const tool = internals()._registeredTools["Get_KRS_Entity_Profile"];
+    expect(tool).toBeDefined();
+    expect(tool.title).toBe("get-krs-entity-profile");
+    expect(tool.description).toContain("Personal data is never returned");
+  });
+
+  it("registers exactly 6 tools", () => {
+    expect(Object.keys(internals()._registeredTools)).toHaveLength(6);
   });
 
   it("has input schemas with krs and rejestr fields", () => {
     const tools = internals()._registeredTools;
 
-    for (const name of ["Get_Current_KRS_Record", "Get_Full_KRS_Record", "Check_KRS_Status", "Get_KRS_Entry_History"]) {
+    for (const name of ["Get_Current_KRS_Record", "Get_Full_KRS_Record", "Check_KRS_Status", "Get_KRS_Entry_History", "Get_KRS_Entity_Profile"]) {
       const shape = tools[name].inputSchema.shape;
       expect(shape).toHaveProperty("krs");
       expect(shape).toHaveProperty("rejestr");
@@ -90,7 +97,7 @@ describe("MCP Server", () => {
     const tools = internals()._registeredTools;
     const rejestr = (name: string) => tools[name].inputSchema.shape.rejestr as { isOptional(): boolean };
 
-    for (const name of ["Get_Current_KRS_Record", "Get_Full_KRS_Record", "Check_KRS_Status", "Get_KRS_Entry_History"]) {
+    for (const name of ["Get_Current_KRS_Record", "Get_Full_KRS_Record", "Check_KRS_Status", "Get_KRS_Entry_History", "Get_KRS_Entity_Profile"]) {
       expect(rejestr(name).isOptional()).toBe(true);
     }
   });
