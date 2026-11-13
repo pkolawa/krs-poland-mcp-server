@@ -10,7 +10,8 @@ Serwer MCP udostępniający dane z publicznego API Krajowego Rejestru Sądowego 
 - HTTP client: retry (30s/60s backoff) tylko dla 5xx/408/429/błędów sieci; 404 i 204 → `not_found` bez ponawiania.
   Kolejność URL: query params (działa), potem path params (obecnie zawsze 404 – zapas na zmianę routingu)
 - Odpis aktualny podmiotu wykreślonego zwraca 204 – wtedy jedynym źródłem jest odpis pełny (wpis „WYKREŚLENIE…”)
-- Build: esbuild do jednego pliku ESM (`build/index.mjs`)
+- Build: esbuild do jednego pliku ESM (`build/index.mjs`); `@modelcontextprotocol/sdk` i `zod` (v4) są external –
+  instalowane z `dependencies`, dzięki czemu serwer i SDK używają tej samej kopii zod
 
 ## Komendy
 

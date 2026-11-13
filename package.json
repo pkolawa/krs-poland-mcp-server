@@ -43,7 +43,7 @@
   "homepage": "https://github.com/pkolawa/krs-poland-mcp-server#readme",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.1",
-    "zod": "^3.25.76"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
