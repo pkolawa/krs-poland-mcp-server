@@ -47,6 +47,14 @@ describe("MCP Server", () => {
     expect(tool.annotations).toEqual({ readOnlyHint: true, openWorldHint: true });
   });
 
+  it("lets both extract tools return selected sections only", () => {
+    const tools = internals()._registeredTools;
+    for (const name of ["Get_Current_KRS_Record", "Get_Full_KRS_Record"]) {
+      expect(Object.keys(tools[name].inputSchema.shape)).toEqual(["krs", "rejestr", "dzialy"]);
+      expect(tools[name].description).toContain("dzialy");
+    }
+  });
+
   it("registers Check_KRS_Status tool as read-only", () => {
     const tool = internals()._registeredTools["Check_KRS_Status"];
     expect(tool).toBeDefined();

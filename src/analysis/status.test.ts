@@ -29,6 +29,7 @@ const FILED_UP_TO_2025 = {
 interface Overrides {
   formaPrawna?: string;
   dataRejestracjiWKRS?: string;
+  identyfikatory?: Record<string, string>;
   dzial2?: KrsOdpisDane["dzial2"];
   dzial3?: KrsOdpisDane["dzial3"];
   dzial4?: Record<string, unknown>;
@@ -52,6 +53,7 @@ function currentExtract(overrides: Overrides = {}): KrsExtract {
           danePodmiotu: {
             formaPrawna: overrides.formaPrawna ?? "SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
             nazwa: "TESTOWA SPÓŁKA Z OGRANICZONĄ ODPOWIEDZIALNOŚCIĄ",
+            identyfikatory: overrides.identyfikatory ?? { regon: "32042896000000", nip: "8513177593" },
           },
         },
         dzial2: overrides.dzial2 ?? { reprezentacja: BOARD },
@@ -385,6 +387,79 @@ describe("analyzeCurrentExtract", () => {
       expect(codes(report)).toEqual(["ostrzezenie:KURATOR", "ostrzezenie:KURATOR", "informacja:KURATOR_ZAKONCZONY"]);
       expect(report.sygnaly[0].opis).toContain("Ustanowiono kuratora od 14.10.2026 do 14.04.2027.");
       expect(report.sygnaly[0].szczegoly).toEqual({ podstawaIZakres: "W TRYBIE ART. 42 KC" });
+    });
+  });
+
+  describe("dział 1 – NIP status", () => {
+    const nip = (statusNip?: string, dataDecyzji?: string) => ({
+      regon: "32042896000000",
+      nip: "8513177593",
+      ...(statusNip && { statusNip }),
+      ...(dataDecyzji && { dataDecyzji }),
+    });
+
+    it("flags a NIP revoked by the tax office as critical", () => {
+      // Shape as in the API, e.g. KRS 0000338173: { regon, nip, statusNip: "UCHYLONY", dataDecyzji: "2026-11-10" }.
+      const report = analyze({ identyfikatory: nip("UCHYLONY", "2026-11-10") });
+
+      expect(report.ocena).toBe("KRYTYCZNE");
+      expect(report.podsumowanie).toBe("Wykryto: 1 sygnał krytyczny.");
+      expect(report.sygnaly).toEqual([
+        {
+          kod: "NIP_UCHYLONY",
+          waga: "krytyczny",
+          dzial: 1,
+          opis:
+            "Urząd skarbowy uchylił NIP 8513177593 decyzją z dnia 10.11.2026. NIP uchyla się, gdy podatnik posługuje się " +
+            "fałszywym lub fikcyjnym adresem siedziby albo miejsca prowadzenia działalności (art. 8c ust. 4 ustawy " +
+            "o zasadach ewidencji i identyfikacji podatników i płatników); przywraca się go po zmianie adresu w rejestrze.",
+          szczegoly: { nip: "8513177593", statusNip: "UCHYLONY", dataDecyzji: "10.11.2026" },
+        },
+      ]);
+    });
+
+    it("warns about an annulled NIP, with or without Polish diacritics", () => {
+      for (const status of ["UNIEWAŻNIONY", "Unieważniony", "UNIEWAZNIONY"]) {
+        const report = analyze({ identyfikatory: nip(status, "2026-03-02") });
+
+        expect(codes(report)).toEqual(["ostrzezenie:NIP_UNIEWAZNIONY"]);
+        expect(report.sygnaly[0].opis).toMatch(/^Urząd skarbowy unieważnił NIP 8513177593 decyzją z dnia 02\.03\.2026 – /);
+        expect(report.sygnaly[0].szczegoly).toEqual({ nip: "8513177593", statusNip: status.toUpperCase(), dataDecyzji: "02.03.2026" });
+      }
+    });
+
+    it("notes a restored NIP without raising the assessment", () => {
+      const report = analyze({ identyfikatory: nip("PRZYWRÓCONY", "2026-06-30") });
+
+      expect(report.ocena).toBe("BRAK_SYGNALOW");
+      expect(codes(report)).toEqual(["informacja:NIP_PRZYWROCONY"]);
+      expect(report.sygnaly[0].opis).toBe("Urząd skarbowy przywrócił wcześniej uchylony NIP 8513177593 (data decyzji: 30.06.2026).");
+    });
+
+    it("warns about an unknown NIP status and keeps a decision date it cannot parse", () => {
+      const report = analyze({ identyfikatory: nip("ZAWIESZONY", "30.06.2026") });
+
+      expect(report.sygnaly).toEqual([
+        {
+          kod: "NIP_STATUS",
+          waga: "ostrzezenie",
+          dzial: 1,
+          opis: "Status NIP 8513177593 w KRS: ZAWIESZONY decyzją z dnia 30.06.2026.",
+          szczegoly: { nip: "8513177593", statusNip: "ZAWIESZONY", dataDecyzji: "30.06.2026" },
+        },
+      ]);
+    });
+
+    it("describes the decision without a date or NIP when the API leaves them out", () => {
+      const report = analyze({ identyfikatory: { regon: "32042896000000", statusNip: "UCHYLONY" } });
+
+      expect(report.sygnaly[0].opis).toMatch(/^Urząd skarbowy uchylił NIP\. NIP uchyla się/);
+      expect(report.sygnaly[0].szczegoly).toEqual({ statusNip: "UCHYLONY" });
+    });
+
+    it("reports nothing for a valid NIP or an empty status", () => {
+      expect(analyze({ identyfikatory: nip() }).sygnaly).toEqual([]);
+      expect(analyze({ identyfikatory: { ...nip(), statusNip: " " } }).sygnaly).toEqual([]);
     });
   });
 

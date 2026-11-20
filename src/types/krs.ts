@@ -43,7 +43,11 @@ export interface KrsWersjaPola {
 export interface KrsDanePodmiotu {
   nazwa?: string | Array<KrsWersjaPola & { nazwa?: string }>;
   formaPrawna?: string | Array<KrsWersjaPola & { formaPrawna?: string }>;
-  identyfikatory?: { nip?: string; regon?: string; [key: string]: unknown };
+  /**
+   * W odpisie pełnym – lista wersji. `statusNip` (np. "UCHYLONY") i `dataDecyzji` (yyyy-mm-dd) pojawiają się,
+   * gdy urząd skarbowy uchylił, unieważnił albo przywrócił NIP (CRP KEP przekazuje to do KRS).
+   */
+  identyfikatory?: { nip?: string; regon?: string; statusNip?: string; dataDecyzji?: string; [key: string]: unknown };
   [key: string]: unknown;
 }
 
