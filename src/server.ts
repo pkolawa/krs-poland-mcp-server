@@ -49,7 +49,8 @@ server.registerTool("Check_KRS_Status",
             "Check whether an entity in KRS is active and list risk signals found in its register entry: " +
             "liquidation, bankruptcy, restructuring, arrangement, suspension, dissolution, tax and other arrears " +
             "with enforcement, asset security, dismissed bankruptcy petition, court-appointed curator, missing board, " +
-            "overdue annual financial statements, and deletion from the register. Returns a compact report " +
+            "overdue annual financial statements, NIP revoked or annulled by the tax office, and deletion from the " +
+            "register. Returns a compact report " +
             "instead of the raw extract. The register (P/S) is optional – both are checked when omitted.",
         inputSchema: checkKrsStatusTool.schema,
         annotations: { readOnlyHint: true, openWorldHint: true }

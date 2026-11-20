@@ -73,6 +73,10 @@ Wymagane logowania: `npm login` oraz `mcp-publisher login github` (token rejestr
 - Surowe odpisy idą jako JSON bez wcięć (wcięcia podwajają odpis pełny dużej spółki: ~430 tys. → ~210 tys. znaków).
   Parametr `dzialy` (1–6) zostawia wybrane działy; w odpisie pełnym `selectSections` zawęża też `naglowekP.wpis`
   do wpisów, do których odwołują się `nrWpisuWprow`/`nrWpisuWykr` tych działów. Odpisu z cache nie modyfikuje
+- Status NIP: `dzial1.danePodmiotu.identyfikatory` ma `statusNip` i `dataDecyzji` (yyyy-mm-dd) tylko po decyzji
+  urzędu skarbowego; zmiana wchodzi do KRS zwykłym wpisem. `UCHYLONY` (fikcyjny adres, art. 8c ust. 4 ustawy
+  o ewidencji podatników) → sygnał krytyczny; `UNIEWAŻNIONY` (podmiotom z KRS tylko przy wielokrotnym nadaniu,
+  art. 8c ust. 2a) → ostrzeżenie; `PRZYWRÓCONY` → informacja; inna wartość → ostrzeżenie `NIP_STATUS`
 - Numer KRS: 10 cyfr zaczynających się od 0, rejestr: P (przedsiębiorców) lub S (stowarzyszeń)
 
 ## Struktura plików

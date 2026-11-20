@@ -129,7 +129,8 @@ describe("buildEntityProfile", () => {
       przewazajaca: ["70.10.Z – DZIAŁALNOŚĆ FIRM CENTRALNYCH"],
       pozostala: ["68.20.Z – WYNAJEM NIERUCHOMOŚCI"],
     });
-    expect(profile.status).toEqual({ ocena: "BRAK_SYGNALOW", podsumowanie: "Brak sygnałów ostrzegawczych w KRS.", sygnaly: [] });
+    // The fixture's NIP is revoked (statusNip "UCHYLONY"), which Check_KRS_Status treats as critical.
+    expect(profile.status).toEqual({ ocena: "KRYTYCZNE", podsumowanie: "Wykryto: 1 sygnał krytyczny.", sygnaly: ["NIP_UCHYLONY"] });
   });
 
   it("never returns personal data, although the API sends masked names, PESEL and birth dates", () => {
@@ -158,7 +159,7 @@ describe("buildEntityProfile", () => {
       uwagi: ["Podmiot w likwidacji – reprezentują go likwidatorzy (1): LIKWIDATOR JEDNOOSOBOWO."],
     });
     expect(inLiquidation.status.ocena).toBe("KRYTYCZNE");
-    expect(inLiquidation.status.sygnaly).toEqual(["LIKWIDACJA"]);
+    expect(inLiquidation.status.sygnaly).toEqual(["LIKWIDACJA", "NIP_UCHYLONY"]);
   });
 
   it("covers associations: purpose, public-benefit status, supervising authority and long branch lists", () => {

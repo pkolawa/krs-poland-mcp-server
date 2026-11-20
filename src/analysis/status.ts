@@ -8,6 +8,7 @@ export { hasContent };
 
 /**
  * Ocena statusu podmiotu na podstawie samego odpisu KRS:
+ * - dział 1: NIP uchylony, unieważniony albo przywrócony przez urząd skarbowy,
  * - dział 2: brak składu organu reprezentacji,
  * - dział 3: zaległe roczne sprawozdania finansowe,
  * - dział 4: zaległości, egzekucje, zabezpieczenie majątku, oddalenie wniosku o upadłość,
@@ -528,6 +529,78 @@ function analyzeDzial5(dzial5: KrsDzialOgolny | undefined, today: Date): StatusS
 }
 
 // ---------------------------------------------------------------------------
+// Dział 1 – status NIP
+// ---------------------------------------------------------------------------
+
+const NIP_ACT = "ustawy o zasadach ewidencji i identyfikacji podatników i płatników";
+
+/** Data decyzji w sprawie NIP przychodzi jako yyyy-mm-dd; pozostałe daty w KRS mają format dd.mm.yyyy. */
+function formatIsoDate(value: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  return match ? `${match[3]}.${match[2]}.${match[1]}` : value;
+}
+
+function withoutDiacritics(text: string): string {
+  return text.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+}
+
+/**
+ * Status NIP, który CRP KEP przekazuje do KRS po decyzji urzędu skarbowego (art. 8a ust. 3 ustawy o ewidencji).
+ * Bez `statusNip` NIP jest ważny.
+ */
+function analyzeNip(identyfikatory: unknown): StatusSignal[] {
+  if (!isRecord(identyfikatory)) return [];
+  const status = str(identyfikatory.statusNip)?.toUpperCase();
+  if (!status) return [];
+
+  const nip = str(identyfikatory.nip);
+  const data = str(identyfikatory.dataDecyzji);
+  const numer = nip ? `NIP ${nip}` : "NIP";
+  const decyzja = data ? ` decyzją z dnia ${formatIsoDate(data)}` : "";
+  const szczegoly = { ...(nip && { nip }), statusNip: status, ...(data && { dataDecyzji: formatIsoDate(data) }) };
+
+  switch (withoutDiacritics(status)) {
+    case "UCHYLONY":
+      return [
+        {
+          kod: "NIP_UCHYLONY",
+          waga: "krytyczny",
+          dzial: 1,
+          opis:
+            `Urząd skarbowy uchylił ${numer}${decyzja}. NIP uchyla się, gdy podatnik posługuje się fałszywym lub fikcyjnym ` +
+            `adresem siedziby albo miejsca prowadzenia działalności (art. 8c ust. 4 ${NIP_ACT}); ` +
+            "przywraca się go po zmianie adresu w rejestrze.",
+          szczegoly,
+        },
+      ];
+    case "UNIEWAZNIONY":
+      return [
+        {
+          kod: "NIP_UNIEWAZNIONY",
+          waga: "ostrzezenie",
+          dzial: 1,
+          opis:
+            `Urząd skarbowy unieważnił ${numer}${decyzja} – tym numerem nie można się posługiwać (art. 8c ust. 3 ${NIP_ACT}). ` +
+            "Podmiotowi wpisanemu do KRS unieważnia się NIP nadany wielokrotnie – ustal, który NIP jest ważny.",
+          szczegoly,
+        },
+      ];
+    case "PRZYWROCONY":
+      return [
+        {
+          kod: "NIP_PRZYWROCONY",
+          waga: "informacja",
+          dzial: 1,
+          opis: `Urząd skarbowy przywrócił wcześniej uchylony ${numer}${data ? ` (data decyzji: ${formatIsoDate(data)})` : ""}.`,
+          szczegoly,
+        },
+      ];
+    default:
+      return [{ kod: "NIP_STATUS", waga: "ostrzezenie", dzial: 1, opis: `Status ${numer} w KRS: ${status}${decyzja}.`, szczegoly }];
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Dział 2 – organ reprezentacji
 // ---------------------------------------------------------------------------
 
@@ -689,13 +762,15 @@ function sortSignals(signals: StatusSignal[]): StatusSignal[] {
 export function analyzeCurrentExtract(extract: KrsExtract, rejestr: Rejestr, krs: string, today: Date = new Date()): StatusReport {
   const naglowek = getNaglowek(extract);
   const dane = extract.odpis?.dane;
-  const formaPrawna = currentFieldValue(getDanePodmiotu(extract)?.formaPrawna, "formaPrawna");
+  const danePodmiotu = getDanePodmiotu(extract);
+  const formaPrawna = currentFieldValue(danePodmiotu?.formaPrawna, "formaPrawna");
 
   const dzial6 = analyzeDzial6(dane?.dzial6);
   const financial = analyzeFinancialStatements(dane?.dzial3, formaPrawna, parseKrsDate(naglowek?.dataRejestracjiWKRS), today);
 
   const signals = sortSignals([
     ...dzial6.signals,
+    ...analyzeNip(danePodmiotu?.identyfikatory),
     ...analyzeDzial4(dane?.dzial4),
     ...analyzeDzial5(dane?.dzial5, today),
     ...analyzeRepresentation(dane?.dzial2, dzial6.state),
