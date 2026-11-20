@@ -70,6 +70,9 @@ Wymagane logowania: `npm login` oraz `mcp-publisher login github` (token rejestr
   analityczne (status, karta, historia, watchlist) nie zwracają danych osób fizycznych – tylko funkcje, nazwy
   wyłącznie dla podmiotów prawnych (`withoutPersonalData` w `src/analysis/values.ts`). Surowe odpisy
   (`Get_Current_KRS_Record`, `Get_Full_KRS_Record`) zwracają dane tak, jak podaje je API
+- Surowe odpisy idą jako JSON bez wcięć (wcięcia podwajają odpis pełny dużej spółki: ~430 tys. → ~210 tys. znaków).
+  Parametr `dzialy` (1–6) zostawia wybrane działy; w odpisie pełnym `selectSections` zawęża też `naglowekP.wpis`
+  do wpisów, do których odwołują się `nrWpisuWprow`/`nrWpisuWykr` tych działów. Odpisu z cache nie modyfikuje
 - Numer KRS: 10 cyfr zaczynających się od 0, rejestr: P (przedsiębiorców) lub S (stowarzyszeń)
 
 ## Struktura plików
@@ -77,7 +80,7 @@ Wymagane logowania: `npm login` oraz `mcp-publisher login github` (token rejestr
 ```
 src/index.ts        — entrypoint
 src/server.ts       — rejestracja narzędzi
-src/tools/          — handlery narzędzi MCP (extract.ts: fabryka narzędzi odpisu aktualnego/pełnego;
+src/tools/          — handlery narzędzi MCP (extract.ts: fabryka narzędzi odpisu aktualnego/pełnego i filtr działów;
                       checkStatus.ts eksportuje też lookupEntityStatus,
                       używany przez watchlist.ts)
 src/schemas/krs.ts  — wspólne schematy Zod (numer KRS, opcjonalny rejestr) i registersToCheck (P, potem S)

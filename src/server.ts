@@ -17,7 +17,8 @@ server.registerTool("Get_Current_KRS_Record",
         description:
             "Get the raw current extract (odpis aktualny) of an entity from KRS as JSON – all register sections " +
             "as they stand today (tens of thousands of characters for a large company; prefer Check_KRS_Status " +
-            "for a compact answer). Entities struck off the register have no current extract. " +
+            "for a compact answer). Pass dzialy to return only selected sections, e.g. [2] for the board, " +
+            "representation, supervisory board and proxies. Entities struck off the register have no current extract. " +
             "The register (P/S) is optional – both are checked when omitted.",
         inputSchema: getKrsCurrentExtractTool.schema,
         annotations: { readOnlyHint: true, openWorldHint: true }
@@ -31,7 +32,9 @@ server.registerTool("Get_Full_KRS_Record",
         description:
             "Get the raw full extract (odpis pełny) of an entity from KRS as JSON – current data plus the complete " +
             "history of register entries (hundreds of thousands of characters for a large company; prefer " +
-            "Get_KRS_Entry_History for the history). Available also for entities struck off the register. " +
+            "Get_KRS_Entry_History for the history). Pass dzialy to return only selected sections, e.g. [2] for " +
+            "the board, representation, supervisory board and proxies; the list of entries in the header is then " +
+            "narrowed to the entries that changed those sections. Available also for entities struck off the register. " +
             "The register (P/S) is optional – both are checked when omitted.",
         inputSchema: getKrsFullExtractTool.schema,
         annotations: { readOnlyHint: true, openWorldHint: true }

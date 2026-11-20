@@ -22,5 +22,5 @@
 - [ ] `Check_KRS_Status`: sygnał dla `statusNip: "UCHYLONY"` (API podaje status i datę decyzji; dziś widać go tylko w karcie podmiotu)
 - [ ] Zasoby MCP (resources) z odpisami, np. `krs://P/0000019193/aktualny`
 - [ ] Porównanie kilku podmiotów (karta/status obok siebie)
-- [ ] Filtr działów dla `Get_Full_KRS_Record` (np. tylko `dzial2`) – odpis pełny dużej spółki ma setki tysięcy znaków
+- [x] Filtr działów dla `Get_Full_KRS_Record` (np. tylko `dzial2`) – odpis pełny dużej spółki ma setki tysięcy znaków — parametr `dzialy` w obu narzędziach odpisu, JSON bez wcięć
 
